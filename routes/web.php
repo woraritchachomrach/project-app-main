@@ -9,10 +9,13 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CarUsageController;
+use App\Http\Controllers\ChiefDashboardController;
 use App\Http\Controllers\FuelUsageController;
 use App\Http\Controllers\FuelController;
 use Illuminate\Http\Request;
 use Illuminate\Types\Relations\Car;
+use App\Http\Controllers\VehicleRequestApprovalController;
+use App\Http\Controllers\DriverDashboardController;
 
 Route::post('/car-requests/set-date', function (Request $request) {
     $request->validate(['date' => 'required|date']);
@@ -55,7 +58,7 @@ Route::middleware(['auth', 'role.admin'])->prefix('admin')->group(function () {
 //Route Chief เฉพราะหน้า Chief
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard'); //ให้chiefไปหน้าdashboardก่อน
 Route::middleware(['auth', 'role.chief'])->prefix('chief')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'chiefDashboard'])->name('chief.dashboard');
+    Route::get('/dashboard', [ChiefDashboardController::class, 'chiefDashboard'])->name('chief.dashboard');
 
     // หน้ารายการคำขอรถ (รออนุมัติ)
     Route::get('/car-requests/pending', [CarApprovalController::class, 'pending'])->name('chief.car-requests.pending');
@@ -72,6 +75,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user-dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');
 });
 
+//Route::middleware(['auth', 'role.chief'])->group(function () {
+//    Route::post('/requests/{id}/approve', [VehicleRequestApprovalController::class, 'approve'])->name('requests.approve');
+//});
+Route::middleware(['auth', \App\Http\Middleware\RoleDriverMiddleware::class])->prefix('driver')->group(function () {
+    Route::get('/dashboard', [DriverDashboardController::class, 'driverDashboard'])->name('driver.dashboard');
+});
+
+
 Route::get('/notifications/read/{id}', function ($id) {
     $notification = Auth::user()->notifications()->findOrFail($id);
     $notification->markAsRead();
@@ -84,8 +95,12 @@ Route::post('/car-requests/set-date', function (Request $request) {
     return response()->json(['status' => 'success']);
 })->middleware('auth');
 
-// web.php
-Route::get('/car-request/{id}/print', [CarRequestController::class, 'printFome'])->name('car_request.print');  //สำหรับ print pdf
+// web.php  //สำหรับ print pdf
+Route::get('/car-request/{id}/print', [CarRequestController::class, 'printForm'])->name('car_request.print');
+Route::get('/font-test', function () {
+    return view('car_requests.print', ['request' => \App\Models\CarRequest::first()]);
+});  
+
 //Route::get('/admin-dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
 Route::get('/calendar', [CarRequestController::class, 'calendar'])->middleware('auth')->name('car-requests.calendar');
 Route::get('/car-requests/calendar-events', [CarRequestController::class, 'calendarEvents'])->middleware('auth');

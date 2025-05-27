@@ -147,4 +147,27 @@ class CarRequestController extends Controller
     {
         //
     }
+
+public function printForm($id)
+{
+    $request = CarRequest::findOrFail($id);
+    
+    $pdf = Pdf::loadView('car_requests.print', compact('request'));
+    
+    $pdf->setOption([
+        'defaultFont' => 'THSarabunNew',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => true,
+        'fontDir' => public_path('fonts/'),
+        'fontCache' => storage_path('fonts/'),
+        'chroot' => realpath(base_path()),
+        'isPhpEnabled' => true,
+        'isFontSubsettingEnabled' => true,
+    ]);
+    
+    return $pdf->stream('document.pdf');
+}
+
+
+
 }

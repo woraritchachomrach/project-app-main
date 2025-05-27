@@ -40,7 +40,7 @@
                                         </td>
                                         <td>{{ $req->driver }}</td>
                                         <td>{{ $req->seats }}</td> <!-- จำนวนคนนั่ง -->
-                                        <td>{{ $req->car_registration }}</td> <!-- ทะเบียนรถ -->xx
+                                        <td>{{ $req->car_registration }}</td> <!-- ทะเบียนรถ -->
                                         <td>{{ $req->name }}</td>
                                         <td>{{ $req->position }}</td>
                                         <td>{{ $req->department }}</td>

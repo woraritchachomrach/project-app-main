@@ -55,8 +55,8 @@
                         </div>
                     </div>
                     <a href="{{ route('car_request.print', $request->id) }}" target="_blank"
-                        class="btn btn-outline-primary mt-3">
-                        <i class="bi bi-printer"></i> พิมพ์ฟอร์มคำขอ
+                    class="btn btn-outline-primary mt-3">
+                    <i class="bi bi-printer"></i> พิมพ์ฟอร์มคำขอ
                     </a>
                 </div>
             </div>
