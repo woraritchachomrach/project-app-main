@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class CarRequest extends Model
 {
     use HasFactory;
@@ -18,16 +19,26 @@ class CarRequest extends Model
         'start_time',
         'end_time',
         'destination',
+        'province',
         'seats',
         'car_registration',
         'driver',
         'reason',
         'status',
+        'purpose',
+        'car_name',
+        'meeting_datetime',
+        'car_request_time',
     ];
 
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(User::class, 'driver');
     }
 }

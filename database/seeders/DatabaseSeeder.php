@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             ChiefSeeder::class,
             UserSeeder::class,
+            DriverSeeder::class,
         ]);
     }
 }

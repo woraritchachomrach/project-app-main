@@ -16,11 +16,14 @@ class CarRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    //public function approve(CarRequest $carRequest)
-    //{
-    //    $carRequest->update(['status'=>'approve']);
-    //    return back()->with('success','อนุมัติเรียบร้อย');
-    //}
+    public function approve($id)
+    {
+        $request = CarRequest::findOrFail($id);
+        $request->status = 'approved';
+        $request->save();
+
+        return redirect()->back()->with('success', 'อนุมัติเรียบร้อย');
+    }
 
     //public function reject(CarRequest $carRequest)
     //{
@@ -63,6 +66,11 @@ class CarRequestController extends Controller
             'car_registration' => 'required|string',
             'driver' => 'required|string',
             'reason' => 'nullable|string',
+            'purpose' => 'nullable|string',
+            'car_name' => 'nullable|string',     // เปลี่ยนจาก car_id เป็น car_name และใช้ string เพราะเป็นชื่อรถ
+            'meeting_datetime' => 'nullable|date',
+            'car_request_time' => 'nullable|string',
+            'province' => 'nullable|string',
         ]);
         $validated['user_id'] = Auth::id();
 
@@ -91,7 +99,7 @@ class CarRequestController extends Controller
     // แสดงข้อมูลทั้งหมดในปฏิทิน
     public function calendarEvents()
     {
-        $requests = CarRequest::where('user_id', auth::id())->get();
+        $requests = CarRequest::all();  //('user_id', auth::id())->get();
 
         $events = [];
 
@@ -100,18 +108,27 @@ class CarRequestController extends Controller
                 'title' => $request->destination,
                 'start' => $request->start_time,
                 'end' => $request->end_time,
-                'requester' => $request->name,
-                'department' => $request->department,
-                'car_registration' => $request->car_registration,
-                'driver' => $request->driver,
-                'start_time' => date('d/m/Y H:i', strtotime($request->start_time)),
-                'end_time' => date('d/m/Y H:i', strtotime($request->end_time)),
+                'backgroundColor' => '#1e90ff',
+                'extendedProps' => [
+                    'requester' => $request->name,
+                    'department' => $request->department,
+                    'car_registration' => $request->car_registration,
+                    'driver' => $request->driver,
+                    'start_time' => date('d/m/Y H:i', strtotime($request->start_time)),
+                    'end_time' => date('d/m/Y H:i', strtotime($request->end_time)),
+                    'purpose' => $request->purpose,
+                    'meeting_datetime' => date('d/m/Y H:i', strtotime($request->meeting_datetime)),
+                    'province' => $request->province,
+                    'car_name' => $request->car_name,
+                    'request_time' => date('d/m/Y H:i', strtotime($request->car_request_time)),
 
+                ],
             ];
         }
 
         return response()->json($events);
     }
+
 
     public function printFome($id)
     {
@@ -148,26 +165,23 @@ class CarRequestController extends Controller
         //
     }
 
-public function printForm($id)
-{
-    $request = CarRequest::findOrFail($id);
-    
-    $pdf = Pdf::loadView('car_requests.print', compact('request'));
-    
-    $pdf->setOption([
-        'defaultFont' => 'THSarabunNew',
-        'isHtml5ParserEnabled' => true,
-        'isRemoteEnabled' => true,
-        'fontDir' => public_path('fonts/'),
-        'fontCache' => storage_path('fonts/'),
-        'chroot' => realpath(base_path()),
-        'isPhpEnabled' => true,
-        'isFontSubsettingEnabled' => true,
-    ]);
-    
-    return $pdf->stream('document.pdf');
-}
+    public function printForm($id)
+    {
+        $request = CarRequest::findOrFail($id);
 
+        $pdf = Pdf::loadView('car_requests.print', compact('request'));
 
+        $pdf->setOption([
+            'defaultFont' => 'THSarabunNew',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'fontDir' => public_path('fonts/'),
+            'fontCache' => storage_path('fonts/'),
+            'chroot' => realpath(base_path()),
+            'isPhpEnabled' => true,
+            'isFontSubsettingEnabled' => true,
+        ]);
 
+        return $pdf->stream('document.pdf');
+    }
 }

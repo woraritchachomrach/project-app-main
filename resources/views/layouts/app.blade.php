@@ -104,96 +104,100 @@
                             </li>
 
                             <!-- ขอใช้รถ -->
-                            <li class="nav-item has-treeview">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-clipboard-list"></i>
-                                    <p>
-                                        ขอใช้รถ
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ route('car-requests.create') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>แบบขอรถ</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('car-requests.list') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>รายการขอรถ</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
+                            @if (auth()->check() && !in_array(auth()->user()->role, ['chief', 'driver']))
+                                <li class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-clipboard-list"></i>
+                                        <p>
+                                            ขอใช้รถ
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ route('car-requests.create') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>แบบขอรถ</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('car-requests.list') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>รายการขอรถ</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
 
                             <!-- เกี่ยวกับรถ -->
-                            <li class="nav-item has-treeview">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-car-side"></i>
-                                    <p>
-                                        เกี่ยวกับรถ
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
+                            @if (auth()->check() && auth()->user()->role === 'driver')
+                                <li class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-car-side"></i>
+                                        <p>
+                                            เกี่ยวกับรถ
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
 
-                                    <!-- บันทึกการใช้รถ -->
-                                    <li class="nav-item has-treeview">
-                                        <a href="#" class="nav-link">
-                                            <i class="fas fa-clipboard-check nav-icon"></i>
-                                            <p>
-                                                บันทึกการใช้รถ
-                                                <i class="right fas fa-angle-left"></i>
-                                            </p>
-                                        </a>
-                                        <ul class="nav nav-treeview">
-                                            <li class="nav-item">
-                                                <a href="{{ route('car-usage.create') }}" class="nav-link">
-                                                    <i class="far fa-circle nav-icon"></i>
-                                                    <p>เพิ่มบันทึก</p>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a href="{{ route('car-usage.index') }}" class="nav-link">
-                                                    <i class="far fa-circle nav-icon"></i>
-                                                    <p>ดูบันทึก</p>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
+                                        <!-- บันทึกการใช้รถ -->
+                                        <li class="nav-item has-treeview">
+                                            <a href="#" class="nav-link">
+                                                <i class="fas fa-clipboard-check nav-icon"></i>
+                                                <p>
+                                                    บันทึกการใช้รถ
+                                                    <i class="right fas fa-angle-left"></i>
+                                                </p>
+                                            </a>
+                                            <ul class="nav nav-treeview">
+                                                <li class="nav-item">
+                                                    <a href="{{ route('car-usage.create') }}" class="nav-link">
+                                                        <i class="far fa-circle nav-icon"></i>
+                                                        <p>เพิ่มบันทึก</p>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="{{ route('car-usage.index') }}" class="nav-link">
+                                                        <i class="far fa-circle nav-icon"></i>
+                                                        <p>ดูบันทึก</p>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
 
-                                    <!-- บันทึกการใช้น้ำมัน -->
-                                    <li class="nav-item has-treeview">
-                                        <a href="#" class="nav-link">
-                                            <i class="fas fa-gas-pump nav-icon"></i>
-                                            <p>
-                                                บันทึกการใช้น้ำมัน
-                                                <i class="right fas fa-angle-left"></i>
-                                            </p>
-                                        </a>
-                                        <ul class="nav nav-treeview">
-                                            <li class="nav-item">
-                                                <a href="{{ route('fuel.create') }}" class="nav-link">
-                                                    <i class="far fa-circle nav-icon"></i>
-                                                    <p>เพิ่มบันทึก</p>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a href="{{ route('fuel.index') }}" class="nav-link">
-                                                    <i class="far fa-circle nav-icon"></i>
-                                                    <p>ดูบันทึก</p>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
+                                        <!-- บันทึกการใช้น้ำมัน -->
+                                        <li class="nav-item has-treeview">
+                                            <a href="#" class="nav-link">
+                                                <i class="fas fa-gas-pump nav-icon"></i>
+                                                <p>
+                                                    บันทึกการใช้น้ำมัน
+                                                    <i class="right fas fa-angle-left"></i>
+                                                </p>
+                                            </a>
+                                            <ul class="nav nav-treeview">
+                                                <li class="nav-item">
+                                                    <a href="{{ route('fuel.create') }}" class="nav-link">
+                                                        <i class="far fa-circle nav-icon"></i>
+                                                        <p>เพิ่มบันทึก</p>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="{{ route('fuel.index') }}" class="nav-link">
+                                                        <i class="far fa-circle nav-icon"></i>
+                                                        <p>ดูบันทึก</p>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
                             <!--เฉพาะหน้าคนขับรถ-->
                             @auth
                                 @if (Auth()->user()->role === 'driver')
-                                    <li><a href="{{ route('driver.dashboard') }}">งานที่ได้รับมอบหมาย</a></li>
+                                    <li><a href="{{ route('driver.dashboard') }}">📋งานที่ได้รับมอบหมาย</a></li>
                                 @endif
                             @endauth
 
@@ -205,7 +209,22 @@
                                         <p>อนุมัติคำร้อง</p>
                                     </a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('chief.car-requests.approved') }}">
+                                        ✅ รายการที่อนุมัติแล้ว
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('chief.car-requests.rejected') }}">
+                                        ❌ รายการที่ไม่อนุมัติ
+                                    </a>
+                                </li>
                             @endif
+
+
+
 
                             <!-- Logout -->
                             <!--<li class="nav-item mt-auto">

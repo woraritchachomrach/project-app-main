@@ -62,6 +62,11 @@ Route::middleware(['auth', 'role.chief'])->prefix('chief')->group(function () {
 
     // หน้ารายการคำขอรถ (รออนุมัติ)
     Route::get('/car-requests/pending', [CarApprovalController::class, 'pending'])->name('chief.car-requests.pending');
+    //ดูรายการอนุมัติ
+    Route::get('/car-requests/approved', [CarApprovalController::class, 'approved'])->name('chief.car-requests.approved');
+    //ดูรายการไม่อนุมัติ
+    Route::get('/car-requests/rejected', [CarApprovalController::class, 'rejected'])->name('chief.car-requests.rejected');
+
     // การอนุมัติ / ไม่อนุมัติ
     Route::post('/car-requests/{id}/approve', [CarApprovalController::class, 'Chiefapprove'])->name('chief.car-requests.approve');
     Route::post('/car-requests/{id}/reject', [CarApprovalController::class, 'Chiefreject'])->name('chief.car-requests.reject');
@@ -80,6 +85,8 @@ Route::middleware(['auth'])->group(function () {
 //});
 Route::middleware(['auth', \App\Http\Middleware\RoleDriverMiddleware::class])->prefix('driver')->group(function () {
     Route::get('/dashboard', [DriverDashboardController::class, 'driverDashboard'])->name('driver.dashboard');
+
+    Route::get('/assigned-jobs', [DriverDashboardController::class, 'assignedJobs'])->name('driver.assigned_jobs');
 });
 
 

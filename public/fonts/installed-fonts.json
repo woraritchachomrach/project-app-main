@@ -1,7 +1,6 @@
 {
-    "sarabun": {
-        "normal": "C:\\xampp\\htdocs\\project-app-main\\project-app-main\\public\\fonts\/\/sarabun_normal_08817d06f2471f93e55b16097b3483a5",
-        "500": "C:\\xampp\\htdocs\\project-app-main\\project-app-main\\public\\fonts\/\/sarabun_500_ed8ecb9db934a3bda27977d27791ea1b",
-        "bold": "sarabun_bold_c290e79cf348fb737ddd51785c641c10"
+    "thsarabunnew": {
+        "normal": "C:\\xampp\\htdocs\\project-app-main\\project-app-main\\public\\fonts\/\/thsarabunnew_normal_7d20716a58880b434e3329cda0d7ebae",
+        "bold": "thsarabunnew_bold_24e592e597b7a70ea67e6906f3ac4abb"
     }
 }

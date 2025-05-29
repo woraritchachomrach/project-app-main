@@ -55,6 +55,7 @@
                 },
 
                 eventClick: function(info) {
+                    
                     const props = info.event.extendedProps;
 
                     document.getElementById('modal-destination').textContent = info.event.title;
@@ -63,11 +64,23 @@
                     document.getElementById('modal-time').textContent =
                         `${props.start_time} - ${props.end_time}`;
                     document.getElementById('modal-plate').textContent = props.car_registration;
-                    document.getElementById('modal-driver').textContent = props.driver;
+                    document.getElementById('modal-driver').textContent = props.driver ?? '-';
+                    
+                    document.getElementById('modal-purpose').textContent = props.purpose ?? '-';
+                    document.getElementById('modal-meeting_datetime').textContent = props
+                        .meeting_datetime ?? '-';
+                    document.getElementById('modal-province').textContent = props.province ?? '-';
+                    document.getElementById('modal-car_name').textContent = props.car_name ?? '-';
+                    
+                    document.getElementById('modal-car_request_time').textContent = props
+                        .request_time ?? '-';
+
 
                     const modal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
                     modal.show();
+                    
                 },
+
 
                 dateClick: function(info) {
                     fetch('/car-requests/set-date', {
@@ -100,11 +113,16 @@
                 </div>
                 <div class="modal-body">
                     <p><strong>สถานที่:</strong> <span id="modal-destination"></span></p>
+                    <p><strong>เพื่อ(ไปทำอะไร):</strong> <span id="modal-purpose"></span></p>
+                    <p><strong>เวลาที่ประชุม:</strong> <span id="modal-meeting_datetime"></span></p>
+                    <p><strong>จังหวัด:</strong> <span id="modal-province"></span></p>
                     <p><strong>ผู้ขอ:</strong> <span id="modal-requester"></span></p>
                     <p><strong>กลุ่ม:</strong> <span id="modal-department"></span></p>
-                    <p><strong>เวลา:</strong> <span id="modal-time"></span></p>
+                    <p><strong>เวลาไป/กลับ:</strong> <span id="modal-time"></span></p>
                     <p><strong>ทะเบียนรถ:</strong> <span id="modal-plate"></span></p>
+                    <p><strong>รถ:</strong> <span id="modal-car_name"></span></p>
                     <p><strong>คนขับ:</strong> <span id="modal-driver"></span></p>
+                    <p><strong>เวลาที่ขอรถ:</strong> <span id="modal-car_request_time"></span></p>
                     <!--<p><strong>สถานะ:</strong> <span id="modal-status"></span></p>-->
                 </div>
             </div>
