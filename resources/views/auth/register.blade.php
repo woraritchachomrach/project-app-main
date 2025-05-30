@@ -52,10 +52,10 @@
                     </div>
                     <select name="role" id="role" required
                         class="mt-1 block w-full pl-10 py-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="user">ผู้ใช้งานทั่วไป</option>
-                        <option value="chief">หัวหน้า</option>
-                        <option value="admin">ผู้ดูแลระบบ</option>
-                        <option value="driver">คนขับรถ</option>
+                        <option value="user">user</option>
+                        <option value="chief">chief</option>
+                        <option value="admin">admin</option>
+                        <option value="driver">driver</option>
                     </select>
                 </div>
             </div>

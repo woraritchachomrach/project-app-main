@@ -32,8 +32,8 @@ class DashboardController extends Controller
     //}
 
 
-    public function adminDashboard()
-    {
-        return view('admin.dashboard');  // เปลี่ยนไปตามที่คุณต้องการให้แสดง
-    }
+    //public function adminDashboard()
+    //{
+    //    return view('admin.dashboard');  // เปลี่ยนไปตามที่คุณต้องการให้แสดง
+    //}
 }

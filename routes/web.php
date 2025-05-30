@@ -13,9 +13,8 @@ use App\Http\Controllers\ChiefDashboardController;
 use App\Http\Controllers\FuelUsageController;
 use App\Http\Controllers\FuelController;
 use Illuminate\Http\Request;
-use Illuminate\Types\Relations\Car;
-use App\Http\Controllers\VehicleRequestApprovalController;
 use App\Http\Controllers\DriverDashboardController;
+use App\Http\Controllers\AdminDashboardController;
 
 Route::post('/car-requests/set-date', function (Request $request) {
     $request->validate(['date' => 'required|date']);
@@ -51,9 +50,10 @@ Route::get('/', function () {
 });
 
 //Route Admin เฉพาระหน้า admin
-Route::middleware(['auth', 'role.admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
-});
+//Route::middleware(['auth', 'role.admin'])->prefix('admin')->group(function () {
+ //   Route::get('/', [AdminDashboardController::class, 'adminDashboard'])->name('admin.dashboard');
+//});
+
 
 //Route Chief เฉพราะหน้า Chief
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard'); //ให้chiefไปหน้าdashboardก่อน

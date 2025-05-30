@@ -14,7 +14,7 @@ class DriverSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'driver1@example.com'],
+            ['email' => 'miczaqa123@gmail.com'],
             [
                 'name' => 'นายสมชาย ใจดี',
                 'password' => bcrypt('22222'),
@@ -48,6 +48,5 @@ class DriverSeeder extends Seeder
                 'role' => 'driver',
             ]
         );
-
     }
 }
