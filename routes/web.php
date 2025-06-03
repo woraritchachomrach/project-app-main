@@ -14,6 +14,9 @@ use App\Http\Controllers\FuelUsageController;
 use App\Http\Controllers\FuelController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\DriverDashboardController;
+use App\Http\Controllers\DirectorController;
+use App\Http\Controllers\PersonalCarRequestController;
+use App\Http\Controllers\PersonalCarApprovalController;
 use App\Http\Controllers\AdminDashboardController;
 
 Route::post('/car-requests/set-date', function (Request $request) {
@@ -89,6 +92,17 @@ Route::middleware(['auth', \App\Http\Middleware\RoleDriverMiddleware::class])->p
     Route::get('/assigned-jobs', [DriverDashboardController::class, 'assignedJobs'])->name('driver.assigned_jobs');
 });
 
+Route::middleware(['auth', \App\Http\Middleware\RoleDirectorMiddleware::class])->prefix('director')->group(function () {
+    Route::get('/dashboard', [DirectorController::class, 'dashboard'])->name('director.dashboard');
+    Route::get('/requests', [DirectorController::class, 'directorlist'])->name('director.director_list');    
+});
+
+//Route::middleware(['auth', \App\Http\Middleware\RoleDriverMiddleware::class])->prefix('driver')->group(function () {
+ //   Route::get('/dashboard', [DriverDashboardController::class, 'driverDashboard'])->name('driver.dashboard');
+
+   // Route::get('/assigned-jobs', [DriverDashboardController::class, 'assignedJobs'])->name('driver.assigned_jobs');
+//});
+
 
 Route::get('/notifications/read/{id}', function ($id) {
     $notification = Auth::user()->notifications()->findOrFail($id);
@@ -113,6 +127,18 @@ Route::get('/calendar', [CarRequestController::class, 'calendar'])->middleware('
 Route::get('/car-requests/calendar-events', [CarRequestController::class, 'calendarEvents'])->middleware('auth');
 Route::resource('car-requests', CarRequestController::class);
 Route::resource('user-profiles', UserProfileController::class);
+
+Route::resource('personal-car-requests', PersonalCarRequestController::class); //Route ของรถส่วนตัว   
+
+//สำหรับchiefอนุมัติคำร้อง รถส่วนตัว
+Route::middleware(['auth', 'role.chief'])->prefix('chief/personal-requests')->group(function () {
+    Route::get('/pending', [PersonalCarApprovalController::class, 'pending'])->name('chief.personal-requests.pending');
+    Route::get('/approved', [PersonalCarApprovalController::class, 'approved'])->name('chief.personal-requests.approved');
+    Route::get('/rejected', [PersonalCarApprovalController::class, 'rejected'])->name('chief.personal-requests.rejected');
+
+    Route::post('/{id}/approve', [PersonalCarApprovalController::class, 'approve'])->name('chief.personal-requests.approve');
+    Route::post('/{id}/reject', [PersonalCarApprovalController::class, 'reject'])->name('chief.personal-requests.reject');
+});
 
 Route::get('/dashboard', function () {
     return view('car_requests.calendar');

@@ -47,6 +47,10 @@
                                     <p class="bg-light p-2 rounded">{{ $request->name }}</p>
                                 </div>
                                 <div class="mb-3">
+                                    <p class="mb-1"><strong>เบอร์โทรผู้ขอ:</strong></p>
+                                    <p class="bg-light p-2 rounded">{{ $request->requester_phone }}</p>
+                                </div>
+                                <div class="mb-3">
                                     <p class="mb-1"><strong>ตำแหน่ง:</strong></p>
                                     <p class="bg-light p-2 rounded">{{ $request->position }}</p>
                                 </div>
@@ -76,6 +80,10 @@
                                 <div class="mb-3">
                                     <p class="mb-1"><strong>พนักงานขับรถ:</strong></p>
                                     <p class="bg-light p-2 rounded">{{ $request->driver ?? '-' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <p class="mb-1"><strong>เบอร์คนขับรถ:</strong></p>
+                                    <p class="bg-light p-2 rounded">{{ $request->driver_phone ?? '-' }}</p>
                                 </div>
                                 <div class="mb-3">
                                     <p class="mb-1"><strong>จังหวัด:</strong></p>

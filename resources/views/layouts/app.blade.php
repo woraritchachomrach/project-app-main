@@ -49,8 +49,9 @@
                                     <div class="dropdown-divider"></div>
                                 @empty
                                     <span class="dropdown-item text-muted">ไม่มีการแจ้งเตือนใหม่</span> @endforelse
-                                <a href="#"
-                class="dropdown-item dropdown-footer">ดูทั้งหมด</a>
+                                <a href="{{ route('driver.assigned_jobs') }}"class="dropdown-item dropdown-footer">
+            ดูทั้งหมด</a>
+
             </div>
             </li>
 
@@ -104,7 +105,7 @@
                             </li>
 
                             <!-- ขอใช้รถ -->
-                            @if (auth()->check() && !in_array(auth()->user()->role, ['chief', 'driver']))
+                            @if (auth()->check() && !in_array(auth()->user()->role, ['chief', 'driver', 'director']))
                                 <li class="nav-item has-treeview">
                                     <a href="#" class="nav-link">
                                         <i class="nav-icon fas fa-clipboard-list"></i>
@@ -124,6 +125,12 @@
                                             <a href="{{ route('car-requests.list') }}" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>รายการขอรถ</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('personal-car-requests.create') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>แบบขอรถส่วนตัว</p>
                                             </a>
                                         </li>
                                     </ul>
@@ -200,28 +207,94 @@
                                     <li><a href="{{ route('driver.dashboard') }}">📋งานที่ได้รับมอบหมาย</a></li>
                                 @endif
                             @endauth
-
-                            <!-- เฉพาะหัวหน้า -->
-                            @if (Auth::user()->role === 'chief')
+                            <!--เฉพาะหน้าคนขับรถ-->
+                            @if (Auth::user()->role === 'driver')
                                 <li class="nav-item">
-                                    <a href="{{ route('chief.dashboard') }}" class="nav-link">
-                                        <i class="fas fa-check-circle nav-icon"></i>
-                                        <p>อนุมัติคำร้อง</p>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('chief.car-requests.approved') }}">
-                                        ✅ รายการที่อนุมัติแล้ว
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('chief.car-requests.rejected') }}">
-                                        ❌ รายการที่ไม่อนุมัติ
+                                    <a class="nav-link" href="{{ route('car-requests.index') }}">
+                                        📋 รายการคำขอใช้รถ
                                     </a>
                                 </li>
                             @endif
+
+
+                            <!-- เฉพาะหัวหน้า -->
+                            @if (Auth::user()->role === 'chief')
+                                <li class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="fas fa-check-circle nav-icon"></i>
+                                        <p>
+                                            อนุมัติคำร้องรถราชการ
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ route('chief.dashboard') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>รายการรออนุมัติ</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('chief.car-requests.approved') }}">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>รายการที่อนุมัติแล้ว</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('chief.car-requests.rejected') }}">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>รายการที่ไม่อนุมัติ</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                            <!-- เฉพาะหัวหน้า -->
+                            @if (Auth::user()->role === 'chief')
+                                <li class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="fas fa-check-circle nav-icon"></i>
+                                        <p>
+                                            อนุมัติคำร้องรถส่วนตัว
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ route('chief.personal-requests.pending') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>รายการรออนุมัติ(รถส่วนตัว)</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('chief.personal-requests.approved') }}">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>รายการที่อนุมัติแล้ว(รถส่วนตัว)</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('chief.personal-requests.rejected') }}">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>รายการที่ไม่อนุมัติ(รถส่วนตัว)</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+
+                            @auth
+                                @if (auth()->user()->role === 'director')
+                                    <li class="nav-item">
+                                        <a href="{{ route('director.dashboard') }}" class="nav-link">
+                                            <i class="bi bi-speedometer2"></i> รายการคำขอรถราชการ
+                                        </a>
+                                    </li>
+                                @endif
+                            @endauth
+
+
 
 
 

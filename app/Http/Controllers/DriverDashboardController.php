@@ -21,7 +21,7 @@ class DriverDashboardController extends Controller
 
         $requests = CarRequest::where('driver', $driverName)
             ->where('status', 'approved')
-            ->orderBy('start_time', 'asc')
+            ->orderBy('start_time', 'asc') // ✅ เรียงจากวันที่ไป
             ->get();
 
         return view('driver.assigned_jobs', compact('requests'));

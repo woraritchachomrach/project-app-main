@@ -5,11 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\CarRequest;
 use App\Notifications\CarRequestReviewed;
 use App\Notifications\CarRequestSubmitted;
+use App\Notifications\NotifyDirectorOfCarRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Notifications\TelegramCarRequestNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Notification;
+
 use Mpdf\Mpdf;
+use NotificationChannels\Telegram\Telegram;
 
 class CarRequestController extends Controller
 {
@@ -34,9 +39,19 @@ class CarRequestController extends Controller
 
     public function index()
     {
-        $requests = CarRequest::where('user_id', auth::id())->latest()->get();
+        $user = Auth::user();
+
+        if ($user->role === 'driver') {
+            // ✅ ให้แสดงเฉพาะรายการที่มอบหมายให้เขา
+            $requests = CarRequest::where('driver', $user->name)->latest()->get();
+        } else {
+            // ผู้ใช้ทั่วไปเห็นรายการของตัวเอง
+            $requests = CarRequest::where('user_id', $user->id)->latest()->get();
+        }
+
         return view('car_requests.list', compact('requests'));
     }
+
 
 
 
@@ -59,12 +74,14 @@ class CarRequestController extends Controller
             'name' => 'required|string',
             'position' => 'required|string',
             'department' => 'required|string',
+            'requester_phone' => 'nullable|string|max:255',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after_or_equal:start_time',
             'destination' => 'required|string',
             'seats' => 'required|numeric|min:1|max:99',
             'car_registration' => 'required|string',
             'driver' => 'required|string',
+            'driver_phone' => 'nullable|string|max:255',
             'reason' => 'nullable|string',
             'purpose' => 'nullable|string',
             'car_name' => 'nullable|string',     // เปลี่ยนจาก car_id เป็น car_name และใช้ string เพราะเป็นชื่อรถ
@@ -77,11 +94,21 @@ class CarRequestController extends Controller
         // สร้างคำขอใหม่และเก็บผลลัพธ์ในตัวแปร $carRequest
         $carRequest = CarRequest::create($validated);
 
+        // 🔔 ส่งแจ้งเตือนไปยัง Chief
         $chief = User::where('role', 'chief')->first();
         $chief->notify(new CarRequestSubmitted($carRequest));
+
+        // 🔔 ส่งแจ้งเตือนไปยังผู้ใช้เจ้าของคำขอ
         $carRequest->user->notify(new CarRequestReviewed($carRequest));
 
+        // ✅ 🔔 ส่งแจ้งเตือนไปยัง Director
+        $directors = User::where('role', 'director')->get();
+        Notification::send($directors, new NotifyDirectorOfCarRequest($carRequest));
+
         return redirect()->route('car-requests.create')->with('success', 'ส่งคำขอเรียบร้อย');
+
+        // Notification::route('telegram', 'YOUR_TELEGRAM_CHAT_ID')
+        //    ->notify(new TelegramCarRequestNotification($carRequest));
     }
 
     /**
@@ -89,12 +116,27 @@ class CarRequestController extends Controller
      */
     public function show(string $id)
     {
-        $request = CarRequest::where('id', $id)
-            ->where('user_id', auth::id()) // ป้องกันดูของคนอื่น
-            ->firstOrFail();
+        $user = Auth::user();
+
+        if (in_array($user->role, ['chief', 'director'])) {
+            // เห็นทุกคำขอ
+            $request = CarRequest::findOrFail($id);
+        } elseif ($user->role === 'driver') {
+            // เห็นเฉพาะคำขอที่ชื่อคนขับตรงกับตนเอง
+            $request = CarRequest::where('id', $id)
+                ->where('driver', $user->name)
+                ->firstOrFail();
+        } else {
+            // เห็นเฉพาะคำขอที่ตนเองเป็นผู้สร้าง
+            $request = CarRequest::where('id', $id)
+                ->where('user_id', $user->id)
+                ->firstOrFail();
+        }
 
         return view('car_requests.show', compact('request'));
     }
+
+
 
     // แสดงข้อมูลทั้งหมดในปฏิทิน
     public function calendarEvents()

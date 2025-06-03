@@ -27,33 +27,90 @@
                     @csrf
 
                     <!-- ส่วนเลือกรถ -->
+                    @php
+                        $cars = [
+                            [
+                                'car_image' => 'ฟอร์จูน1.jpg',
+                                'display' => '🚗 ฟอร์จูน ทะเบียน นค 5915 จังหวัดหนองคาย',
+                            ],
+                            [
+                                'car_image' => 'ฟอร์จูน2.jpg',
+                                'display' => '🚗 ฟอร์จูน ทะเบียน นค 5741 จังหวัดอุดรธานี',
+                            ],
+                            [
+                                'car_image' => 'นิสัน1.jpg',
+                                'display' => '🚗 นิสสัน ทะเบียน กค 5542 จังหวัดกรุงเทพมหานคร',
+                            ],
+                            [
+                                'car_image' => 'นิสัน2.jpg',
+                                'display' => '🚗 นิสสัน ทะเบียน กค 5322 จังหวัดขอนแก่น',
+                            ],
+                            [
+                                'car_image' => 'รถตู้1.jpg',
+                                'display' => '🚐 รถตู้ ทะเบียน 1.นจ 4647 จังหวัดกรุงเทพมหานคร', //
+                            ],
+                            [
+                                'car_image' => 'รถตู้2.jpg',
+                                'display' => '🚐 รถตู้ ทะเบียน 1.นจ 4491 จังหวัดกรุงเทพมหานคร', //
+                            ],
+                            [
+                                'car_image' => 'รถตู้3.jpg',
+                                'display' => '🚐 รถตู้ ทะเบียน 1.นจ 9919 จังหวัดกรุงเทพมหานคร', //
+                            ],
+                            [
+                                'car_image' => 'รถตู้4.jpg',
+                                'display' => '🚐 รถตู้ ทะเบียน 1.นจ 1214 จังหวัดกรุงเทพมหานคร', //
+                            ],
+                        ];
+                    @endphp
+
+
                     <div class="mb-5">
                         <h5 class="fw-bold text-primary mb-4">
                             <i class="fas fa-car me-2"></i>เลือกรถที่ต้องการใช้
                         </h5>
-                        <div class="row g-4">
-                            @foreach (['7500_Moto3.jpg', 'images1.jpg', 'images2.jpg', 'images4.jpg'] as $car)
-                                <div class="col-md-3 col-6">
-                                    <div class="card h-100 border-0 shadow-sm car-option">
-                                        <div class="card-img-top overflow-hidden" style="height: 150px;">
-                                            <img src="{{ asset('storage/images/' . $car) }}"
-                                                class="img-fluid w-100 h-100 object-fit-cover">
-                                        </div>
-                                        <div class="card-body text-center py-2">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="car_image"
-                                                    id="car-{{ $loop->index }}" value="{{ $car }}" required>
-                                                <label class="form-check-label fw-medium" for="car-{{ $loop->index }}">
-                                                    รถ {{ $loop->iteration }}
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
+
+                        <div class="mb-3">
+                            <label for="car_image" class="form-label">ยานพาหนะ</label>
+                            <select class="form-control" name="car_image" id="car_image" required>
+                                <option value="">-- กรุณาเลือกรถที่ต้องการใช้ --</option>
+                                @foreach ($cars as $car)
+                                    <option value="{{ $car['car_image'] }}">{{ $car['display'] }}</option>
+                                @endforeach
+                            </select>
+                            <div class="invalid-feedback d-block">กรุณาเลือกรถที่ต้องการใช้</div>
                         </div>
-                        <div class="invalid-feedback d-block">กรุณาเลือกรถที่ต้องการใช้</div>
+
+                        {{-- Optional: แสดงรูป preview เมื่อเลือกรถ --}}
+                        <div id="carPreview" class="mt-3 d-none">
+                            <strong>ตัวอย่างรถ:</strong>
+                            <img src="" id="carPreviewImg" class="img-thumbnail mt-2" style="max-width: 300px;">
+                        </div>
                     </div>
+
+                    {{-- Optional JavaScript สำหรับแสดงรูป preview --}}
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const select = document.getElementById('car_image');
+                            const preview = document.getElementById('carPreview');
+                            const img = document.getElementById('carPreviewImg');
+
+                            select.addEventListener('change', function() {
+                                if (this.value) {
+                                    const imgUrl = "{{ asset('storage/images') }}/" + this.value;
+                                    img.src = imgUrl;
+                                    preview.classList.remove('d-none');
+                                } else {
+                                    preview.classList.add('d-none');
+                                }
+                            });
+                        });
+                    </script>
+
+
+                    @php
+                        $user = Auth::user();
+                    @endphp
 
                     <!-- ข้อมูลผู้ขอใช้รถ -->
                     <div class="mb-4">
@@ -61,29 +118,44 @@
                             <i class="fas fa-user-tie me-2"></i>ข้อมูลผู้ขอใช้รถ
                         </h5>
                         <div class="row g-3">
+
+                            <!-- ชื่อ-สกุล -->
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">
                                     <i class="fas fa-user me-1 text-muted"></i>ชื่อ-สกุล
                                 </label>
-                                <input type="text" name="name" class="form-control shadow-sm" required>
-                                <div class="invalid-feedback">กรุณากรอกชื่อ-สกุล</div>
+                                <input type="text" name="name" class="form-control shadow-sm"
+                                    value="{{ $user->name }}" readonly>
                             </div>
-                            <div class="col-md-4">
+
+                            <!-- ตำแหน่ง -->
+                            <div class="col-md-3">
                                 <label class="form-label fw-semibold">
                                     <i class="fas fa-briefcase me-1 text-muted"></i>ตำแหน่ง
                                 </label>
-                                <input type="text" name="position" class="form-control shadow-sm" required>
-                                <div class="invalid-feedback">กรุณากรอกตำแหน่ง</div>
+                                <input type="text" name="position" class="form-control shadow-sm"
+                                    value="{{ $user->position }}" readonly>
                             </div>
-                            <div class="col-md-4">
+
+                            <!-- กลุ่ม/ฝ่าย -->
+                            <div class="col-md-3">
                                 <label class="form-label fw-semibold">
                                     <i class="fas fa-users me-1 text-muted"></i>กลุ่ม/ฝ่าย
                                 </label>
-                                <input type="text" name="department" class="form-control shadow-sm" required>
-                                <div class="invalid-feedback">กรุณากรอกกลุ่ม/ฝ่าย</div>
+                                <input type="text" name="department" class="form-control shadow-sm"
+                                    value="{{ $user->department }}" readonly>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-phone-alt me-1 text-muted"></i>เบอร์โทร
+                                </label>
+                                <input type="text" name="requester_phone" class="form-control shadow-sm"
+                                    value="{{ old('requester_phone') }}">
                             </div>
                         </div>
                     </div>
+
 
                     <!-- ข้อมูลการเดินทาง -->
                     <div class="mb-4">
@@ -153,6 +225,13 @@
                                 </label>
                                 <input type="text" name="driver" class="form-control shadow-sm" required readonly>
                                 <div class="invalid-feedback">กรุณาเลือกรถ</div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-phone me-1 text-muted"></i>เบอร์โทรคนขับ
+                                </label>
+                                <input type="text" name="driver_phone" class="form-control shadow-sm" readonly>
                             </div>
                         </div>
                     </div>
@@ -302,7 +381,6 @@
             return `${dateObj.getDate()} ${monthNames[dateObj.getMonth()]} ${buddhistYear} ${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
         }
 
-        // ตั้งค่าปฏิทิน
         function initThaiDatepicker(id) {
             flatpickr(id, {
                 enableTime: true,
@@ -310,8 +388,8 @@
                 locale: "th",
                 altInput: true,
                 altFormat: "j M Y H:i",
-                minDate: "today", // ❗ ไม่ให้จองย้อนหลัง
-                maxDate: new Date().fp_incr(7), // ❗ จำกัดล่วงหน้าไม่เกิน 7 วัน
+                minDate: "today",
+                maxDate: new Date().fp_incr(7),
                 onReady: function(selectedDates, dateStr, instance) {
                     if (selectedDates.length) {
                         instance.altInput.value = formatBuddhistDate(selectedDates[0]);
@@ -321,57 +399,102 @@
                     if (selectedDates.length) {
                         instance.altInput.value = formatBuddhistDate(selectedDates[0]);
                     }
-                    validateDateRange();
                 }
             });
         }
-        // เรียกใช้ปฏิทิน
+
         document.addEventListener('DOMContentLoaded', function() {
             initThaiDatepicker("#meeting_datetime");
             initThaiDatepicker("#car_request_time");
             initThaiDatepicker("#start_time");
             initThaiDatepicker("#end_time");
 
-            // ข้อมูลรถและคนขับ
             const carData = {
-                '7500_Moto3.jpg': {
-                    name: 'Toyota Fortuner',
-                    registration: 'กข-1324 กรุงเทพฯ',
-                    driver: 'นายสมชาย ใจดี'
+                'ฟอร์จูน1.jpg': {
+                    name: 'ฟอร์จูน',
+                    registration: 'นค 5915 หนองคาย',
+                    driver: 'นายนัดทพง รวมวาปี',
+                    phone: '011-1111111'
                 },
-                'images1.jpg': {
-                    name: 'Honda Civic',
-                    registration: 'ขย-8976 เชียงใหม่',
-                    driver: 'นางสาวสุดา โครตช้า'
+                'ฟอร์จูน2.jpg': {
+                    name: 'ฟอร์จูน',
+                    registration: 'นค 5741 อุดรธานี',
+                    driver: 'นายสธาวุท นันคำ',
+                    phone: '022-2222222'
                 },
-                'images2.jpg': {
-                    name: 'Isuzu D-Max',
-                    registration: 'คง-9908 ขอนแก่น',
-                    driver: 'นายสมหมาย หวังดี'
+                'นิสัน1.jpg': {
+                    name: 'นิสัน',
+                    registration: 'กค 5542 กรุงเทพมหานคร',
+                    driver: 'นายสมพุทธ นอก',
+                    phone: '033-3333333'
                 },
-                'images4.jpg': {
-                    name: 'Mazda CX-5',
-                    registration: 'ตต-5466 นครราชสีมา',
-                    driver: 'นางสาวจันทร์เพ็ญ ทองปลอม'
+                'นิสัน2.jpg': {
+                    name: 'นิสัน',
+                    registration: 'กค 5322 ขอนแก่น',
+                    driver: 'นายพนักงาน ไหม่',
+                    phone: '044-4444444'
+                },
+                'รถตู้1.jpg': {
+                    name: 'รถตู้',
+                    registration: '1.นจ 4647 กรุงเทพมหานคร',
+                    driver: 'นายนัดทพง รวมวาปี',
+                    phone: '011-1111111'
+                },
+                'รถตู้2.jpg': {
+                    name: 'รถตู้',
+                    registration: '1.นจ 4491 กรุงเทพมหานคร',
+                    driver: 'นายสธาวุท นันคำ',
+                    phone: '022-2222222'
+                },
+                'รถตู้3.jpg': {
+                    name: 'รถตู้',
+                    registration: '1.นจ 9919 กรุงเทพมหานคร',
+                    driver: 'นายสมพุทธ นอก',
+                    phone: '033-3333333'
+                },
+                'รถตู้4.jpg': {
+                    name: 'รถตู้',
+                    registration: '1.นจ 1214 กรุงเทพมหานคร',
+                    driver: 'นายพนักงาน ไหม่',
+                    phone: '044-4444444'
                 }
             };
 
-            // เมื่อเลือกรถ
-            document.querySelectorAll('input[name="car_image"]').forEach(input => {
-                input.addEventListener('change', function() {
-                    const selectedCar = this.value;
-                    const carInfo = carData[selectedCar];
+            const carSelect = document.getElementById('car_image');
+            const preview = document.getElementById('carPreview');
+            const img = document.getElementById('carPreviewImg');
 
-                    if (carInfo) {
-                        document.querySelector('input[name="car_name"]').value = carInfo.name;
-                        document.querySelector('input[name="car_registration"]').value = carInfo
-                            .registration;
-                        document.querySelector('input[name="driver"]').value = carInfo.driver;
-                    }
-                });
+            carSelect.addEventListener('change', function() {
+                const selectedCar = this.value;
+                const carInfo = carData[selectedCar];
+
+                // รูปภาพ preview
+                if (selectedCar) {
+                    const imgUrl = "{{ asset('storage/images') }}/" + selectedCar;
+                    img.src = imgUrl;
+                    preview.classList.remove('d-none');
+                } else {
+                    preview.classList.add('d-none');
+                }
+
+                // เติมข้อมูลในฟอร์ม
+                if (carInfo) {
+                    console.log(carInfo);
+                    document.querySelector('input[name="car_name"]').value = carInfo.name;
+                    document.querySelector('input[name="car_registration"]').value = carInfo.registration;
+                    document.querySelector('input[name="driver"]').value = carInfo.driver;
+                    document.querySelector('input[name="driver_phone"]').value = carInfo.phone ||
+                        ''; // ✅ เพิ่มบรรทัดนี้
+                } else {
+                    document.querySelector('input[name="car_name"]').value = '';
+                    document.querySelector('input[name="car_registration"]').value = '';
+                    document.querySelector('input[name="driver"]').value = '';
+                    document.querySelector('input[name="driver_phone"]').value = ''; // ✅ ล้างข้อมูลตอนไม่มี
+                }
+
             });
 
-            // จำกัดจำนวนคนนั่งให้เป็นตัวเลข 2 หลัก
+            // จำกัดจำนวนคนนั่งให้ใส่ได้แค่ตัวเลข 2 หลัก
             const seatsInput = document.getElementById('seats');
             seatsInput.addEventListener('input', function() {
                 this.value = this.value.replace(/[^0-9]/g, '');
@@ -383,18 +506,17 @@
             // Bootstrap validation
             (function() {
                 'use strict'
-                const forms = document.querySelectorAll('.needs-validation')
-
+                const forms = document.querySelectorAll('.needs-validation');
                 Array.from(forms).forEach(form => {
                     form.addEventListener('submit', event => {
                         if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
+                            event.preventDefault();
+                            event.stopPropagation();
                         }
-                        form.classList.add('was-validated')
-                    }, false)
-                })
-            })()
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            })();
         });
     </script>
 @endpush

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Directory;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ChiefSeeder::class,
             UserSeeder::class,
             DriverSeeder::class,
+            DirectorUserSeeder::class,
         ]);
     }
 }

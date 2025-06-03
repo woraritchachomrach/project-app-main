@@ -47,7 +47,10 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'role.admin' => \App\Http\Middleware\RoleAdminMiddleware::class,
         'role.chief' => \App\Http\Middleware\RoleChiefMiddleware::class,
-        'role' => \App\Http\Middleware\RoleMiddleware::class,
         'role.driver' => \App\Http\Middleware\RoleDriverMiddleware::class,
+        'role.director' => \App\Http\Middleware\RoleDirectorMiddleware::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
+
+
     ];
 }
