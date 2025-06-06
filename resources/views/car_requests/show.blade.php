@@ -6,13 +6,18 @@
             <h2 class="mb-0 text-primary">
                 <i class="bi bi-car-front me-2"></i>รายละเอียดคำขอใช้รถ
             </h2>
-            <span class="badge fs-6 
-                @if($request->status == 'approved') bg-success
+            <span
+                class="badge fs-6 
+                @if ($request->status == 'approved') bg-success
                 @elseif($request->status == 'rejected') bg-danger
                 @else bg-warning text-dark @endif">
-                @if($request->status == 'approved') อนุมัติแล้ว
-                @elseif($request->status == 'rejected') ไม่อนุมัติ
-                @else รออนุมัติ @endif
+                @if ($request->status == 'approved')
+                    อนุมัติแล้ว
+                @elseif($request->status == 'rejected')
+                    ไม่อนุมัติ
+                @else
+                    รออนุมัติ
+                @endif
             </span>
         </div>
 
@@ -21,10 +26,8 @@
                 <!-- รูปภาพรถ -->
                 <div class="col-md-4 bg-light d-flex align-items-center p-4">
                     @if ($request->car_image)
-                        <img src="{{ asset('storage/images/' . $request->car_image) }}" 
-                             alt="Car Image"
-                             class="img-fluid rounded-3 shadow-sm w-100" 
-                             style="max-height: 280px; object-fit: contain;">
+                        <img src="{{ asset('storage/images/' . $request->car_image) }}" alt="Car Image"
+                            class="img-fluid rounded-3 shadow-sm w-100" style="max-height: 280px; object-fit: contain;">
                     @else
                         <div class="text-center w-100">
                             <i class="bi bi-car-front text-muted" style="font-size: 5rem;"></i>
@@ -153,13 +156,15 @@
                         </div>
 
                         <!-- ปุ่มพิมพ์ -->
-                        <div class="d-flex justify-content-end mt-4">
-                            <a href="{{ route('car_request.print', $request->id) }}" 
-                               target="_blank"
-                               class="btn btn-primary">
-                               <i class="bi bi-printer me-2"></i>พิมพ์ฟอร์มคำขอ
-                            </a>
-                        </div>
+                        @if (Auth::user()->role !== 'chief')
+                            <div class="d-flex justify-content-end mt-4">
+                                <a href="{{ route('car_request.print', $request->id) }}" target="_blank"
+                                    class="btn btn-primary">
+                                    <i class="bi bi-printer me-2"></i>พิมพ์ฟอร์มคำขอ
+                                </a>
+                            </div>
+                        @endif
+
                     </div>
                 </div>
             </div>

@@ -49,6 +49,34 @@
                                         {{ \Carbon\Carbon::parse($request->end_time)->format('d/m/Y H:i') }}
                                     </li>
                                 </ul>
+
+                                {{-- ✅ ปุ่มรับทราบ / ❌ ไม่รับทราบ --}}
+                                <hr>
+                                @if ($request->acknowledgement_status === 'none')
+                                    <form method="POST" action="{{ route('driver.acknowledge', $request->id) }}">
+                                        @csrf
+                                        <div class="d-flex gap-2">
+                                            <button name="status" value="accepted" class="btn btn-success btn-sm">✅ รับทราบ</button>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="document.getElementById('rejectForm-{{ $request->id }}').style.display='block'">❌ ไม่รับทราบ</button>
+                                        </div>
+                                    </form>
+
+                                    <form id="rejectForm-{{ $request->id }}" style="display:none;" method="POST" action="{{ route('driver.acknowledge', $request->id) }}">
+                                        @csrf
+                                        <input type="hidden" name="status" value="rejected">
+                                        <div class="mt-2">
+                                            <textarea name="reason" class="form-control form-control-sm" placeholder="กรุณาระบุเหตุผล..." required></textarea>
+                                            <button type="submit" class="btn btn-danger btn-sm mt-2">ส่งเหตุผล</button>
+                                        </div>
+                                    </form>
+                                @elseif ($request->acknowledgement_status === 'accepted')
+                                    <div class="alert alert-success mt-3 p-2">✅ รับทราบแล้วเมื่อ {{ \Carbon\Carbon::parse($request->acknowledged_at)->format('d/m/Y H:i') }}</div>
+                                @elseif ($request->acknowledgement_status === 'rejected')
+                                    <div class="alert alert-danger mt-3 p-2">
+                                        ❌ ไม่รับทราบ<br>
+                                        <strong>เหตุผล:</strong> {{ $request->acknowledgement_reason }}
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>

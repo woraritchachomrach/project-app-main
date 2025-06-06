@@ -57,7 +57,7 @@
                 eventClick: function(info) {
                     
                     const props = info.event.extendedProps;
-
+                    
                     document.getElementById('modal-destination').textContent = info.event.title;
                     document.getElementById('modal-requester').textContent = props.requester;
                     document.getElementById('modal-department').textContent = props.department;
@@ -71,6 +71,7 @@
                         .meeting_datetime ?? '-';
                     document.getElementById('modal-province').textContent = props.province ?? '-';
                     document.getElementById('modal-car_name').textContent = props.car_name ?? '-';
+                    document.getElementById('modal-driver_phone').textContent = props.driver_phone ?? '-';
                     
                     document.getElementById('modal-car_request_time').textContent = props
                         .request_time ?? '-';
@@ -122,6 +123,7 @@
                     <p><strong>ทะเบียนรถ:</strong> <span id="modal-plate"></span></p>
                     <p><strong>รถ:</strong> <span id="modal-car_name"></span></p>
                     <p><strong>คนขับ:</strong> <span id="modal-driver"></span></p>
+                    <p><strong>เบอร์คนขับ:</strong> <span id="modal-driver_phone"></span></p>
                     <p><strong>เวลาที่ขอรถ:</strong> <span id="modal-car_request_time"></span></p>
                     <!--<p><strong>สถานะ:</strong> <span id="modal-status"></span></p>-->
                 </div>

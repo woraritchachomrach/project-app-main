@@ -31,6 +31,7 @@ class CarRequest extends Model
         'car_name',
         'meeting_datetime',
         'car_request_time',
+        'acknowledged_at',
     ];
 
 

@@ -90,6 +90,9 @@ Route::middleware(['auth', \App\Http\Middleware\RoleDriverMiddleware::class])->p
     Route::get('/dashboard', [DriverDashboardController::class, 'driverDashboard'])->name('driver.dashboard');
 
     Route::get('/assigned-jobs', [DriverDashboardController::class, 'assignedJobs'])->name('driver.assigned_jobs');
+
+     // ✅ เพิ่ม route สำหรับกดรับทราบ/ไม่รับทราบ
+    Route::post('/acknowledge/{id}', [CarRequestController::class, 'acknowledge'])->name('driver.acknowledge');
 });
 
 Route::middleware(['auth', \App\Http\Middleware\RoleDirectorMiddleware::class])->prefix('director')->group(function () {
@@ -129,6 +132,7 @@ Route::resource('car-requests', CarRequestController::class);
 Route::resource('user-profiles', UserProfileController::class);
 
 Route::resource('personal-car-requests', PersonalCarRequestController::class); //Route ของรถส่วนตัว   
+Route::get('/chief/acknowledgements', [CarApprovalController::class, 'acknowledgementHistory'])->name('chief.acknowledgement_history');// Route สำหรับรับทราบกับไม่รับทราบ
 
 //สำหรับchiefอนุมัติคำร้อง รถส่วนตัว
 Route::middleware(['auth', 'role.chief'])->prefix('chief/personal-requests')->group(function () {

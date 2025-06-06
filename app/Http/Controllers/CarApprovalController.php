@@ -28,6 +28,13 @@ class CarApprovalController extends Controller
         return view('chief.car_requests.rejected', compact('requests'));
     }
 
+    public function acknowledgementHistory()
+    {
+        $requests = \App\Models\CarRequest::orderBy('acknowledged_at', 'desc')->paginate(20);
+        return view('chief.acknowledgement_history', compact('requests'));
+    }
+
+
 
 
     public function Chiefapprove($id)

@@ -1,10 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
-    <div class="card shadow-sm mx-auto w-100">
+<div class="container-fluid py-4 px-2">
+    <div class="card shadow-sm border-0 w-100">
         <div class="card-body">
-            <h3 class="mb-4 text-danger text-center">❌ รายการคำขอที่ไม่อนุมัติ</h3>
+            <h3 class="mb-4 text-danger text-center fw-bold">
+                ❌ รายการคำขอที่ไม่อนุมัติ
+            </h3>
 
             @if ($requests->isEmpty())
                 <div class="alert alert-info text-center">
@@ -12,8 +14,8 @@
                 </div>
             @else
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered align-middle text-center">
-                        <thead class="table-light">
+                    <table class="table table-bordered table-hover align-middle mb-0 text-center w-100" style="min-width: 1300px;">
+                        <thead class="table-danger">
                             <tr>
                                 <th>รูป</th>
                                 <th>พนักงานขับรถ</th>
@@ -27,9 +29,9 @@
                                 <th>กลุ่ม</th>
                                 <th>สถานที่</th>
                                 <th>จังหวัด</th>
-                                <th>เพื่อ(ไปทำอะไร)</th>
+                                <th>เพื่อ (ไปทำอะไร)</th>
                                 <th>เวลาที่ประชุม</th>
-                                <th>เวลาไป/กลับ</th>
+                                <th>เวลาไป / กลับ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,27 +39,40 @@
                                 <tr>
                                     <td>
                                         <img src="{{ asset('storage/images/' . $req->car_image) }}"
-                                            class="rounded shadow-sm" style="width: 100px; height: auto;">
+                                            class="rounded shadow-sm"
+                                            style="width: 100px; height: auto;" alt="car">
                                     </td>
                                     <td>{{ $req->driver }}</td>
                                     <td>{{ $req->driver_phone }}</td>
                                     <td>{{ $req->seats }} คน</td>
-                                    <td>{{ $req->car_registration }}</td>
+                                    <td>
+                                        <span class="badge bg-primary text-white">
+                                            {{ $req->car_registration }}
+                                        </span>
+                                    </td>
                                     <td>{{ $req->car_name }}</td>
                                     <td>{{ $req->name }}</td>
                                     <td>{{ $req->requester_phone ?? '-' }}</td>
                                     <td>{{ $req->position }}</td>
-                                    <td>{{ $req->department }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary text-white">
+                                            {{ $req->department }}
+                                        </span>
+                                    </td>
                                     <td>{{ $req->destination }}</td>
                                     <td>{{ $req->province }}</td>
                                     <td>{{ $req->purpose }}</td>
                                     <td>
-                                        {{ \Carbon\Carbon::parse($req->meeting_datetime)->format('d/m/Y H:i') }}
+                                        <span class="badge bg-info text-dark">
+                                            {{ \Carbon\Carbon::parse($req->meeting_datetime)->format('d/m/Y H:i') }}
+                                        </span>
                                     </td>
                                     <td>
-                                        {{ \Carbon\Carbon::parse($req->start_time)->format('d/m/Y H:i') }}<br>
-                                        <strong>ถึง</strong><br>
-                                        {{ \Carbon\Carbon::parse($req->end_time)->format('d/m/Y H:i') }}
+                                        <span class="badge bg-light text-dark">
+                                            {{ \Carbon\Carbon::parse($req->start_time)->format('d/m/Y H:i') }}<br>
+                                            <small class="text-muted">ถึง</small><br>
+                                            {{ \Carbon\Carbon::parse($req->end_time)->format('d/m/Y H:i') }}
+                                        </span>
                                     </td>
                                 </tr>
                             @endforeach
@@ -69,4 +84,36 @@
         </div>
     </div>
 </div>
+
+<style>
+    .table, .table th, .table td {
+        font-size: 0.9rem;
+        vertical-align: middle !important;
+        text-align: center;
+        padding: 0.65rem 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        display: inline-block;
+        max-width: 120px;
+    }
+
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .container-fluid {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    img {
+        object-fit: cover;
+    }
+</style>
 @endsection

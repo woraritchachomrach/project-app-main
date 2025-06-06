@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Notifications\TelegramCarRequestNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Notification;
+use App\Notifications\DriverAcknowledgedNotification;
 
 use Mpdf\Mpdf;
 use NotificationChannels\Telegram\Telegram;
@@ -156,6 +157,7 @@ class CarRequestController extends Controller
                     'department' => $request->department,
                     'car_registration' => $request->car_registration,
                     'driver' => $request->driver,
+                    'driver_phone' => $request->driver_phone ?? '-',
                     'start_time' => date('d/m/Y H:i', strtotime($request->start_time)),
                     'end_time' => date('d/m/Y H:i', strtotime($request->end_time)),
                     'purpose' => $request->purpose,
@@ -182,6 +184,27 @@ class CarRequestController extends Controller
         return $pdf->stream('car_request_print');
     }
 
+    //สำหรับ แจ้งรับทราบหรือไม่รับทราบ
+    public function acknowledge(Request $request, $id)
+    {
+        $carRequest = \App\Models\CarRequest::findOrFail($id);
+
+        $status = $request->input('status');
+        if (!in_array($status, ['accepted', 'rejected'])) {
+            return back()->with('error', 'สถานะไม่ถูกต้อง');
+        }
+
+        $carRequest->acknowledgement_status = $status;
+        $carRequest->acknowledgement_reason = $status === 'rejected' ? $request->input('reason') : null;
+        $carRequest->acknowledged_at = now();
+        $carRequest->save();
+
+        // 🔔 แจ้ง Chief ทุกคน
+        $chiefs = \App\Models\User::where('role', 'chief')->get();   // ใช้ Spatie หรือเปลี่ยนเป็น filter ตาม group ก็ได้
+        Notification::send($chiefs, new DriverAcknowledgedNotification($carRequest));
+
+        return back()->with('success', 'บันทึกการตอบกลับเรียบร้อยแล้ว');
+    }
 
     /**
      * Show the form for editing the specified resource.

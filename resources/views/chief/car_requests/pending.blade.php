@@ -1,42 +1,45 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
-    <div class="card shadow-sm mx-auto w-100">
+<div class="container-fluid py-4 px-2">
+    <div class="card shadow-sm border-0 w-100">
         <div class="card-body">
-            <h3 class="mb-4 text-primary text-center">📝 รายการคำขอใช้รถ (รออนุมัติ)</h3>
+            <h3 class="mb-4 text-primary text-center fw-bold">
+                📝 รายการคำขอใช้รถ (รออนุมัติ)
+            </h3>
 
-            {{-- แสดงข้อความแจ้งเตือน --}}
+            {{-- แจ้งเตือน --}}
             @if (session('success'))
                 <div class="alert alert-success text-center">{{ session('success') }}</div>
             @elseif(session('danger'))
                 <div class="alert alert-danger text-center">{{ session('danger') }}</div>
             @endif
 
-            {{-- กรณีไม่มีคำขอ --}}
+            {{-- ไม่มีรายการ --}}
             @if ($requests->isEmpty())
                 <div class="alert alert-warning text-center">ยังไม่มีคำขอที่รออนุมัติ</div>
             @else
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle text-center">
+                    <table class="table table-bordered table-hover align-middle mb-0 text-center w-100" style="min-width: 1300px;">
                         <thead class="table-light">
                             <tr>
                                 <th>รูป</th>
-                                <th>พนักงานขับรถ</th>
+                                <th>คนขับ</th>
                                 <th>เบอร์คนขับ</th>
-                                <th>จำนวนคนนั่ง</th>
-                                <th>ทะเบียนรถ</th>
+                                <th>ที่นั่ง</th>
+                                <th>ทะเบียน</th>
                                 <th>รถ</th>
                                 <th>ผู้ขอ</th>
+                                <th>ไฟล์แนบ</th>
                                 <th>เบอร์ผู้ขอ</th>
                                 <th>ตำแหน่ง</th>
                                 <th>กลุ่ม</th>
                                 <th>สถานที่</th>
                                 <th>จังหวัด</th>
-                                <th>เพื่อ (ไปทำอะไร)</th>
-                                <th>เวลาที่ประชุม</th>
-                                <th>เวลาไป / กลับ</th>
-                                <th>จัดการ</th>
+                                <th>เพื่อ</th>
+                                <th>ประชุม</th>
+                                <th>เวลาไป/กลับ</th>
+                                
                             </tr>
                         </thead>
                         <tbody>
@@ -45,41 +48,55 @@
                                     <td>
                                         <img src="{{ asset('storage/images/' . $req->car_image) }}"
                                              class="rounded shadow-sm"
-                                             style="width: 100px; height: auto;">
+                                             style="width: 100px; height: auto;" alt="car">
                                     </td>
                                     <td>{{ $req->driver }}</td>
                                     <td>{{ $req->driver_phone }}</td>
                                     <td>{{ $req->seats }}</td>
-                                    <td>{{ $req->car_registration }}</td>
+                                    <td>
+                                        <span class="badge bg-primary text-white">
+                                            {{ Str::limit($req->car_registration, 15) }}
+                                        </span>
+                                    </td>
                                     <td>{{ $req->car_name }}</td>
                                     <td>{{ $req->name }}</td>
                                     <td>{{ $req->requester_phone }}</td>
                                     <td>{{ $req->position }}</td>
-                                    <td>{{ $req->department }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary text-white">
+                                            {{ Str::limit($req->department, 20) }}
+                                        </span>
+                                    </td>
                                     <td>{{ $req->destination }}</td>
                                     <td>{{ $req->province }}</td>
                                     <td>{{ $req->purpose }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($req->meeting_datetime)->format('d/m/Y H:i') }}</td>
                                     <td>
-                                        {{ \Carbon\Carbon::parse($req->start_time)->format('d/m/Y H:i') }}<br>
-                                        <strong>ถึง</strong><br>
-                                        {{ \Carbon\Carbon::parse($req->end_time)->format('d/m/Y H:i') }}
+                                        <span class="badge bg-info text-dark">
+                                            {{ \Carbon\Carbon::parse($req->meeting_datetime)->format('d/m/Y H:i') }}
+                                        </span>
                                     </td>
                                     <td>
-                                        <form action="{{ route('chief.car-requests.approve', $req->id) }}"
-                                              method="POST" class="d-inline">
+                                        <span class="badge bg-light text-dark">
+                                            {{ \Carbon\Carbon::parse($req->start_time)->format('d/m/Y H:i') }}<br>
+                                            <small class="text-muted">ถึง</small><br>
+                                            {{ \Carbon\Carbon::parse($req->end_time)->format('d/m/Y H:i') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <form action="{{ route('chief.car-requests.approve', $req->id) }}" method="POST" class="d-inline">
                                             @csrf
-                                            <button class="btn btn-success btn-sm mb-1"
-                                                    onclick="return confirm('คุณแน่ใจหรือไม่ว่าจะอนุมัติคำขอนี้?')">
-                                                ✅ อนุมัติ
+                                            <button type="submit" class="btn btn-outline-success btn-sm rounded-circle p-2"
+                                                data-bs-toggle="tooltip" title="อนุมัติ"
+                                                onclick="return confirm('คุณแน่ใจหรือไม่ว่าจะอนุมัติคำขอนี้?')">
+                                                ✅
                                             </button>
                                         </form>
-                                        <form action="{{ route('chief.car-requests.reject', $req->id) }}"
-                                              method="POST" class="d-inline">
+                                        <form action="{{ route('chief.car-requests.reject', $req->id) }}" method="POST" class="d-inline">
                                             @csrf
-                                            <button class="btn btn-danger btn-sm"
-                                                    onclick="return confirm('คุณแน่ใจหรือไม่ว่าจะไม่อนุมัติคำขอนี้?')">
-                                                ❌ ไม่อนุมัติ
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle p-2"
+                                                data-bs-toggle="tooltip" title="ไม่อนุมัติ"
+                                                onclick="return confirm('คุณแน่ใจหรือไม่ว่าจะไม่อนุมัติคำขอนี้?')">
+                                                ❌
                                             </button>
                                         </form>
                                     </td>
@@ -92,4 +109,40 @@
         </div>
     </div>
 </div>
+
+<style>
+    .table, .table th, .table td {
+        font-size: 0.9rem;
+        vertical-align: middle !important;
+        text-align: center;
+        padding: 0.65rem 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        display: inline-block;
+        max-width: 120px;
+    }
+
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .container-fluid {
+        padding-right: 0;
+        padding-left: 0;
+    }
+</style>
+
+@section('scripts')
+<script>
+    $(document).ready(function () {
+        $('[data-bs-toggle="tooltip"]').tooltip({ container: 'body' });
+    });
+</script>
+@endsection
 @endsection

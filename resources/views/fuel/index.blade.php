@@ -1,11 +1,25 @@
 @extends('layouts.app')
 
+@section('styles')
+<style>
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="container mt-5">
     <div class="card shadow rounded">
-        <div class="card-header bg-info text-white">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
             <h4 class="mb-0"><i class="fas fa-list me-2"></i>รายการบันทึกการใช้น้ำมัน</h4>
+            <button onclick="window.print()" class="btn btn-outline-light btn-sm no-print">
+                <i class="fas fa-print me-1"></i> พิมพ์รายงาน
+            </button>
         </div>
+
         <div class="card-body table-responsive">
             @if($fuels->count() > 0)
                 <table class="table table-bordered table-hover">
@@ -21,7 +35,7 @@
                             <th>ผู้สั่งจ่าย</th>
                             <th>ผู้รับ</th>
                             <th>หมายเหตุ</th>
-                            <th>จัดการ</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -37,21 +51,14 @@
                             <td>{{ $fuel->issued_by }}</td>
                             <td>{{ $fuel->receiver }}</td>
                             <td>{{ $fuel->remark }}</td>
-                            <td class="text-center">
-                                <a href="{{ route('fuel.edit', $fuel->id) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                                <form action="{{ route('fuel.destroy', $fuel->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
-                                </form>
-                            </td>
+                            
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
 
                 {{-- Pagination --}}
-                <div class="mt-3">
+                <div class="mt-3 no-print">
                     {{ $fuels->links() }}
                 </div>
             @else

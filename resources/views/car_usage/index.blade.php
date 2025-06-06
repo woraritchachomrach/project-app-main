@@ -1,9 +1,12 @@
 @extends('layouts.app')
 
+@section('styles')
+
+
 @section('content')
 <div class="container mt-5">
     <h3 class="mb-4 text-primary fw-bold">บันทึกการใช้รถราชการ</h3>
-
+     @yield('styles')
     {{-- แสดงข้อความเมื่อบันทึกสำเร็จ --}}
     @if (session('success'))
         <div class="alert alert-success">
@@ -11,30 +14,35 @@
         </div>
     @endif
 
+    {{-- ปุ่มพิมพ์รายงาน --}}
+<div id="print-button-wrapper" class="mb-3 text-end">
+    <button class="btn btn-outline-secondary" onclick="window.print()">
+        <i class="fas fa-print"></i> พิมพ์รายงาน
+    </button>
+</div>
+
+
+
     {{-- ตารางข้อมูล --}}
     <div class="table-responsive-lg shadow-sm">
-    <table class="table table-bordered table-hover table-sm text-nowrap bg-white">
-        <thead class="table-primary text-center">
-            <tr>
-                <th style="width: 5%;">ลำดับ</th>
-                <th style="width: 10%;">วันที่</th>
-                <th style="width: 8%;">เวลาออก</th>
-                <th style="width: 12%;">ผู้ใช้รถ</th>
-                <th style="width: 15%;">สถานที่ไป</th>
-                <th style="width: 10%;">เลขไมล์ออก</th>
-                <th style="width: 10%;">เลขไมล์กลับ</th>
-                <th style="width: 10%;">รวมระยะทาง</th>
-                <th style="width: 12%;">พนักงานขับรถ</th>
-                <th style="width: 10%;">วันที่กลับ</th>
-                <th style="width: 8%;">เวลากลับ</th>
-                <th style="width: 20%;">หมายเหตุ</th>
-            </tr>
-        </thead>
-                
-
-
- 
-          <tbody>
+        <table class="table table-bordered table-hover table-sm text-nowrap bg-white">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th style="width: 5%;">ลำดับ</th>
+                    <th style="width: 10%;">วันที่</th>
+                    <th style="width: 8%;">เวลาออก</th>
+                    <th style="width: 12%;">ผู้ใช้รถ</th>
+                    <th style="width: 15%;">สถานที่ไป</th>
+                    <th style="width: 10%;">เลขไมล์ออก</th>
+                    <th style="width: 10%;">เลขไมล์กลับ</th>
+                    <th style="width: 10%;">รวมระยะทาง</th>
+                    <th style="width: 12%;">พนักงานขับรถ</th>
+                    <th style="width: 10%;">วันที่กลับ</th>
+                    <th style="width: 8%;">เวลากลับ</th>
+                    <th style="width: 20%;">หมายเหตุ</th>
+                </tr>
+            </thead>
+            <tbody>
                 @forelse ($carUsages as $usage)
                     <tr>
                         <td class="text-center">{{ $usage->sequence }}</td>
@@ -60,12 +68,20 @@
     </div>
 </div>
 
+<style>
+@media print {
+    #print-button-wrapper {
+        display: none !important;
+    }
 
+    .table-responsive-lg {
+        overflow: visible !important;
+    }
 
-
-
-
-
-
-
+    table {
+        width: 100% !important;
+        table-layout: auto !important;
+    }
+}
+</style>
 @endsection

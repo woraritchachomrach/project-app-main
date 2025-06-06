@@ -26,33 +26,80 @@
                             <a href="#" class="nav-link">ยินดีเข้าสู่ระบบขอใช้รถราชการ</a>
                         </li>
                     </ul>
+                    
 
                     <ul class="navbar-nav ms-auto">
                         <!-- Notifications -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link" data-bs-toggle="dropdown" href="#">
-                                <i class="far fa-bell"></i>
-                                @php $notificationCount = auth()->user()->unreadNotifications->count(); @endphp
-                                @if ($notificationCount > 0)
-                                    <span class="badge bg-danger navbar-badge">{{ $notificationCount }}</span>
-                                @endif
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                                <span class="dropdown-header">{{ $notificationCount }} การแจ้งเตือน</span>
-                                <div class="dropdown-divider"></div>
-                                @forelse (auth()->user()->unreadNotifications as $notification)
-                                    <a href="{{ route('notifications.read', $notification->id) }}" class="dropdown-item">
-                                        <i class="fas fa-car text-primary me-2"></i>
-                                        {{ $notification->data['message'] ?? 'ไม่มีข้อความ' }}
-                                        <span class="float-end text-muted text-sm">{{ $notification->created_at->diffForHumans() }}</span>
-                                    </a>
-                                    <div class="dropdown-divider"></div>
-                                @empty
-                                    <span class="dropdown-item text-muted">ไม่มีการแจ้งเตือนใหม่</span> @endforelse
-                                <a href="{{ route('driver.assigned_jobs') }}"class="dropdown-item dropdown-footer">
-            ดูทั้งหมด</a>
 
+                            @php
+                            $inboxNotifications = auth()->user()->unreadNotifications->where('type', 'App\\Notifications\\DriverAcknowledgedNotification');
+                            $inboxCount = $inboxNotifications->count();
+                            @endphp
+
+                                <!-- ✉️ กล่องจดหมาย (Inbox) -->
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link" data-bs-toggle="dropdown" href="#">
+                                        <i class="fas fa-envelope"></i>
+                                        @if ($inboxCount > 0)
+                                            <span class="badge bg-warning navbar-badge">{{ $inboxCount }}</span>
+                                        @endif
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                                        <span class="dropdown-header">{{ $inboxCount }} ข้อความใหม่</span>
+                                        <div class="dropdown-divider"></div>
+                                        @forelse ($inboxNotifications as $notification)
+                                        <a href="{{ route('notifications.read', $notification->id) }}" class="dropdown-item">
+                                            <i class="fas fa-envelope-open-text text-info me-2"></i>
+                                            {{ $notification->data['message'] ?? 'ไม่มีข้อความ' }}
+                                            <span class="float-end text-muted text-sm">{{ $notification->created_at->diffForHumans() }}</span>
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        @empty
+                                        <span class="dropdown-item text-muted">ไม่มีข้อความใหม่</span> @endforelse
+
+                                        <a href="{{ route('chief.acknowledgement_history') }}"
+                class="dropdown-item dropdown-footer">📨 ดูกล่องข้อความทั้งหมด</a>
             </div>
+            </li>
+
+
+            @php
+                $alertNotifications = auth()
+                    ->user()
+                    ->unreadNotifications->filter(
+                        fn($n) => $n->type !== 'App\\Notifications\\DriverAcknowledgedNotification',
+                    );
+                $alertCount = $alertNotifications->count();
+            @endphp
+
+            <!-- 🔔 กระดิ่งแจ้งเตือน -->
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-bs-toggle="dropdown" href="#">
+                    <i class="far fa-bell"></i>
+                    @if ($alertCount > 0)
+                        <span class="badge bg-danger navbar-badge">{{ $alertCount }}</span>
+                    @endif
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                    <span class="dropdown-header">{{ $alertCount }} การแจ้งเตือน</span>
+                    <div class="dropdown-divider"></div>
+                    @forelse ($alertNotifications as $notification)
+                        <a href="{{ route('notifications.read', $notification->id) }}" class="dropdown-item">
+                            <i class="fas fa-car text-primary me-2"></i>
+                            {{ $notification->data['message'] ?? 'ไม่มีข้อความ' }}
+                            <span
+                                class="float-end text-muted text-sm">{{ $notification->created_at->diffForHumans() }}</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                    @empty
+                        <span class="dropdown-item text-muted">ไม่มีการแจ้งเตือน</span>
+                    @endforelse
+                    <a href="{{ route('driver.assigned_jobs') }}" class="dropdown-item dropdown-footer">ดูทั้งหมด</a>
+                </div>
+            </li>
+
+
             </li>
 
             <!-- User Profile -->
@@ -201,20 +248,42 @@
                                     </ul>
                                 </li>
                             @endif
-                            <!--เฉพาะหน้าคนขับรถ-->
+                            <!-- เมนูสำหรับคนขับรถ -->
                             @auth
                                 @if (Auth()->user()->role === 'driver')
-                                    <li><a href="{{ route('driver.dashboard') }}">📋งานที่ได้รับมอบหมาย</a></li>
+                                    <div class="nav-menu-header mb-2">
+                                        <span class="text-muted small">เมนูคนขับรถ</span>
+                                    </div>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link d-flex align-items-center"
+                                            href="{{ route('driver.dashboard') }}">
+                                            <span class="icon-circle bg-primary text-white me-3">
+                                                <i class="fas fa-clipboard-check"></i>
+                                            </span>
+                                            <div>
+                                                <span class="d-block">งานที่ได้รับมอบหมาย</span>
+                                                <small class="text-muted">ดูงานทั้งหมดที่ได้รับ</small>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link d-flex align-items-center"
+                                            href="{{ route('car-requests.index') }}">
+                                            <span class="icon-circle bg-success text-white me-3">
+                                                <i class="fas fa-car-alt"></i>
+                                            </span>
+                                            <div>
+                                                <span class="d-block">รายการคำขอใช้รถ</span>
+                                                <small class="text-muted">จัดการคำขอใช้รถทั้งหมด</small>
+                                            </div>
+                                        </a>
+                                    </li>
+
+                                    <hr class="nav-divider my-2">
                                 @endif
                             @endauth
-                            <!--เฉพาะหน้าคนขับรถ-->
-                            @if (Auth::user()->role === 'driver')
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('car-requests.index') }}">
-                                        📋 รายการคำขอใช้รถ
-                                    </a>
-                                </li>
-                            @endif
 
 
                             <!-- เฉพาะหัวหน้า -->
@@ -262,19 +331,22 @@
                                     </a>
                                     <ul class="nav nav-treeview">
                                         <li class="nav-item">
-                                            <a href="{{ route('chief.personal-requests.pending') }}" class="nav-link">
+                                            <a href="{{ route('chief.personal-requests.pending') }}"
+                                                class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>รายการรออนุมัติ(รถส่วนตัว)</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('chief.personal-requests.approved') }}">
+                                            <a class="nav-link"
+                                                href="{{ route('chief.personal-requests.approved') }}">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>รายการที่อนุมัติแล้ว(รถส่วนตัว)</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('chief.personal-requests.rejected') }}">
+                                            <a class="nav-link"
+                                                href="{{ route('chief.personal-requests.rejected') }}">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p>รายการที่ไม่อนุมัติ(รถส่วนตัว)</p>
                                             </a>
@@ -285,7 +357,7 @@
 
 
                             @auth
-                                @if (auth()->user()->role === 'director')
+                                @if (auth()->user()->role === 'director') <!-- เฉพาะอำนวยการ -->
                                     <li class="nav-item">
                                         <a href="{{ route('director.dashboard') }}" class="nav-link">
                                             <i class="bi bi-speedometer2"></i> รายการคำขอรถราชการ
@@ -294,8 +366,45 @@
                                 @endif
                             @endauth
 
+                            @if (auth()->user()->role === 'director') <!-- เฉพาะอำนวยการ -->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('personal-car-requests.index') }}">
+                                        รายการคำขอใช้รถส่วนตัว
+                                    </a>
+                                </li>
+                            @endif
 
-
+                            <!-- เฉพาะหัวหน้า -->
+                            @if (Auth::user()->role === 'chief')
+                                <li class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <p>
+                                             🧍‍♂️เมนูเกี่ยวกับคนขับ
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ route('chief.acknowledgement_history') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>รายการรับทราบขอคนขับ</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>xxxxxx</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>xxxxxx</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
 
 
 
