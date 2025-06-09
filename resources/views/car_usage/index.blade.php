@@ -29,7 +29,7 @@
             <thead class="table-primary text-center">
                 <tr>
                     <th style="width: 5%;">ลำดับ</th>
-                    <th style="width: 10%;">วันที่</th>
+                    <th style="width: 10%;">วันที่ออก</th>
                     <th style="width: 8%;">เวลาออก</th>
                     <th style="width: 12%;">ผู้ใช้รถ</th>
                     <th style="width: 15%;">สถานที่ไป</th>
@@ -45,9 +45,9 @@
             <tbody>
                 @forelse ($carUsages as $usage)
                     <tr>
-                        <td class="text-center">{{ $usage->sequence }}</td>
+                        <td class="text-center">{{ $loop->iteration }}</td>
                         <td>{{ \Carbon\Carbon::parse($usage->date)->format('d/m/Y') }}</td>
-                        <td>{{ $usage->time }}</td>
+                        <td>{{ \Carbon\Carbon::parse($usage->time)->format('H:i') }}</td>
                         <td>{{ $usage->user_name }}</td>
                         <td>{{ $usage->destination }}</td>
                         <td class="text-end">{{ number_format($usage->start_mileage, 2) }}</td>
@@ -55,7 +55,7 @@
                         <td class="text-end">{{ number_format($usage->total_distance, 2) }}</td>
                         <td>{{ $usage->driver_name }}</td>
                         <td>{{ \Carbon\Carbon::parse($usage->return_date)->format('d/m/Y') }}</td>
-                        <td>{{ $usage->return_time }}</td>
+                        <td>{{ \Carbon\Carbon::parse($usage->return_time)->format('H:i') }}</td>
                         <td>{{ $usage->notes }}</td>
                     </tr>
                 @empty

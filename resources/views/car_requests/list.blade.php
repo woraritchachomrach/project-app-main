@@ -22,13 +22,14 @@
             <!-- Card Body -->
             <div class="card-body p-4">
                 <!-- Create Button -->
-                @unless (Auth::user()->role === 'driver')
+                @if (!in_array(Auth::user()->role, ['driver', 'director']))
                     <div class="text-end mb-4">
                         <a href="{{ route('car-requests.create') }}" class="btn btn-success">
                             <i class="bi bi-plus-circle me-2"></i>➕ สร้างคำขอใหม่
                         </a>
                     </div>
-                @endunless
+                @endif
+
 
 
                 <!-- Empty State -->

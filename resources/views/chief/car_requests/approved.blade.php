@@ -12,7 +12,7 @@
                 <div class="alert alert-info text-center">ยังไม่มีคำขอที่ได้รับการอนุมัติ</div>
             @else
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle mb-0 text-center w-100" style="min-width: 1300px;">
+                    <table class="table table-bordered table-hover align-middle mb-0 text-center w-100" style="min-width: 1400px;">
                         <thead class="table-success">
                             <tr>
                                 <th>รูป</th> 
@@ -30,6 +30,7 @@
                                 <th>เพื่อ (ไปทำอะไร)</th>
                                 <th>เวลาที่ประชุม</th>
                                 <th>เวลาไป / กลับ</th>
+                                <th>ไฟล์แนบ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -72,13 +73,60 @@
                                             {{ \Carbon\Carbon::parse($req->end_time)->format('d/m/Y H:i') }}
                                         </span>
                                     </td>
+                                    <td style="max-width: 240px;">
+                                        @if($req->attachment_path)
+                                            <div class="d-flex justify-content-center align-items-center gap-2 flex-nowrap">
+                                                <a href="{{ asset('storage/' . $req->attachment_path) }}"
+                                                   target="_blank"
+                                                   class="btn btn-sm btn-outline-primary px-2 py-1 w-auto">
+                                                    เปิดดู
+                                                </a>
+
+                                                @php
+                                                    $ext = pathinfo($req->attachment_path, PATHINFO_EXTENSION);
+                                                @endphp
+
+                                                @if($ext === 'pdf')
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-secondary px-2 py-1 w-auto"
+                                                            data-bs-toggle="modal" data-bs-target="#modalPDF{{ $req->id }}">
+                                                        ดูตัวอย่าง
+                                                    </button>
+                                                @endif
+                                            </div>
+
+                                            {{-- modal PDF --}}
+                                            @if($ext === 'pdf')
+                                                <div class="modal fade" id="modalPDF{{ $req->id }}" tabindex="-1" aria-labelledby="modalLabel{{ $req->id }}" aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="modalLabel{{ $req->id }}">เอกสารแนบ</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <embed src="{{ asset('storage/' . $req->attachment_path) }}" type="application/pdf" width="100%" height="600px">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @elseif(in_array($ext, ['jpg','jpeg','png','gif']))
+                                                <div class="mt-2 text-center">
+                                                    <img src="{{ asset('storage/' . $req->attachment_path) }}"
+                                                         class="img-thumbnail shadow-sm"
+                                                         style="max-width: 180px; max-height: 150px; object-fit: contain;">
+                                                </div>
+                                            @endif
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
             @endif
-
         </div>
     </div>
 </div>
@@ -115,3 +163,7 @@
     }
 </style>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+@endpush

@@ -10,8 +10,10 @@ class DirectorController extends Controller
 
     public function dashboard()
     {
-        return view('director.directordashboard');
+        $drivers = \App\Models\Driver::all();
+        return view('car_requests.calendar', compact('drivers'));
     }
+
 
     public function directorlist()
     {

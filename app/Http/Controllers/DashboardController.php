@@ -10,8 +10,16 @@ class DashboardController extends Controller
 {
     public function userDashboard()
     {
-        return view('car_requests.calendar');  // เปลี่ยนไปตามที่คุณต้องการให้แสดง
+        $drivers = \App\Models\Driver::all();
+        return view('car_requests.calendar', compact('drivers'));
     }
+
+
+    public function index()
+    {
+        return redirect()->route('car-requests.calendar');
+    }
+
 
     //public function chiefDashboard() //ของ chief
     //{

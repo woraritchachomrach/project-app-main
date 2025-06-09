@@ -6,11 +6,19 @@ use App\Models\PersonalCarRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class PersonalCarRequestController extends Controller
 {
     public function store(Request $request)
     {
+        //fig ข้อมูล
+        $request->merge([
+            'name' => Auth::user()->name,
+            'position' => Auth::user()->position,
+            'department' => Auth::user()->department,
+        ]);
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
@@ -57,11 +65,26 @@ class PersonalCarRequestController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $requests = PersonalCarRequest::latest()->get(); // ดึงข้อมูลทั้งหมด หรือใช้ paginate() ก็ได้
+        $query = PersonalCarRequest::query();
+
+        // กรองตามเดือนที่เลือก (format: Y-m)
+        if ($request->filled('month')) {
+            try {
+                $carbonMonth = \Carbon\Carbon::createFromFormat('Y-m', $request->month);
+                $query->whereMonth('start_time', $carbonMonth->month)
+                    ->whereYear('start_time', $carbonMonth->year);
+            } catch (\Exception $e) {
+                // ถ้าค่าที่ส่งมาไม่ถูกต้อง ไม่ทำอะไร
+            }
+        }
+
+        $requests = $query->latest()->get();
+
         return view('personal_car_requests.index', compact('requests'));
     }
+
 
 
     public function create()

@@ -11,6 +11,9 @@
             <link rel="stylesheet"
                 href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
             <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
         </head>
 
         <body class="hold-transition sidebar-mini layout-fixed">
@@ -257,7 +260,7 @@
 
                                     <li class="nav-item">
                                         <a class="nav-link d-flex align-items-center"
-                                            href="{{ route('driver.dashboard') }}">
+                                            href="{{ route('driver.assigned_jobs') }}">
                                             <span class="icon-circle bg-primary text-white me-3">
                                                 <i class="fas fa-clipboard-check"></i>
                                             </span>
@@ -357,29 +360,31 @@
 
 
                             @auth
-                                @if (auth()->user()->role === 'director') <!-- เฉพาะอำนวยการ -->
+                                @if (auth()->user()->role === 'director')
+                                    <!-- เฉพาะอำนวยการ -->
                                     <li class="nav-item">
-                                        <a href="{{ route('director.dashboard') }}" class="nav-link">
-                                            <i class="bi bi-speedometer2"></i> รายการคำขอรถราชการ
+                                        <a href="{{ route('car-requests.list') }}" class="nav-link">
+                                            <i class="bi bi-speedometer2"></i> รายการคำขอรถ
                                         </a>
                                     </li>
                                 @endif
                             @endauth
 
-                            @if (auth()->user()->role === 'director') <!-- เฉพาะอำนวยการ -->
+                            <!--@if (auth()->user()->role === 'director')
+                                 เฉพาะอำนวยการ 
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('personal-car-requests.index') }}">
                                         รายการคำขอใช้รถส่วนตัว
                                     </a>
                                 </li>
-                            @endif
+                            @endif -->
 
                             <!-- เฉพาะหัวหน้า -->
                             @if (Auth::user()->role === 'chief')
                                 <li class="nav-item has-treeview">
                                     <a href="#" class="nav-link">
                                         <p>
-                                             🧍‍♂️เมนูเกี่ยวกับคนขับ
+                                            🧍‍♂️เมนูเกี่ยวกับคนขับ
                                             <i class="right fas fa-angle-left"></i>
                                         </p>
                                     </a>
@@ -390,16 +395,11 @@
                                                 <p>รายการรับทราบขอคนขับ</p>
                                             </a>
                                         </li>
+                                        
                                         <li class="nav-item">
-                                            <a class="nav-link" href="#">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>xxxxxx</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>xxxxxx</p>
+                                            <a class="nav-link" href="{{ route('chief.drivers.index') }}">
+                                                <i class="far fa-circle nav-icon"></i>  
+                                                <p>รายชื่อพนักงานขับรถ</p>
                                             </a>
                                         </li>
                                     </ul>
@@ -434,6 +434,26 @@
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    flatpickr("#time", {
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: "H:i",
+                        time_24hr: true
+                    });
+
+                    flatpickr("#return_time", {
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: "H:i",
+                        time_24hr: true
+                    });
+                });
+            </script>
 
             @stack('scripts')
             @yield('scripts')

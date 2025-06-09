@@ -9,13 +9,13 @@
                     <h4 class="mb-0">
                         <i class="bi bi-car-front me-2"></i>รายการคำขอใช้รถส่วนตัว
                     </h4>
-                    @if (Auth::user()->role !== 'director')
+                    <!--@if (Auth::user()->role !== 'director') @endif -->
                     <div>
                         <a href="{{ route('car-requests.index') }}" class="btn btn-light btn-sm">
                             <i class="bi bi-car me-1"></i> รายการคำขอใช้รถราชการ
                         </a>
                     </div>
-                    @endif
+                    
                 </div>
             </div>
 

@@ -10,11 +10,13 @@ class CarUsageController extends Controller
 {
     public function create()
     {
-        $approvedRequests = CarRequest::where('status', 'approved')->get();
+        $carRequests = CarRequest::where('status', 'approved')->with(['user', 'driver', 'vehicle'])->get();
         $latestSequence = CarUsage::max('sequence') + 1 ?? 1;
-        return view('car_usage.create', compact('approvedRequests', 'latestSequence'));
+
+        return view('car_usage.create', compact('carRequests', 'latestSequence'));
     }
 
+    
     public function store(Request $request)
     {
         $validated = $request->validate([

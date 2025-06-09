@@ -2,20 +2,75 @@
 
 @section('content')
     <div class="container-fluid mt-4">
-
-        <h1 class="mb-4"></h1>
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h3 class="card-title mb-0">📅 ปฏิทินกิจกรรม</h3>
+        <div class="row">
+            <!-- 🟦 ปฏิทิน -->
+            <div class="col-md-9 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">📅 ปฏิทินกิจกรรม</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="calendar" style="min-height: 600px;"></div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div id="calendar" style="max-width: 1500px; margin: auto;"></div>
+
+            <!-- 👨‍✈️ รายชื่อคนขับ -->
+            <div class="col-md-3 mb-4">
+                <div class="card border-secondary">
+                    <div class="card-header bg-secondary text-white fw-bold">
+                        👨‍✈️ รายชื่อคนขับรถ
+                    </div>
+                    <ul class="list-group list-group-flush driver-scroll">
+                        @foreach ($drivers ?? [] as $driver)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ $driver->name }}
+                                @php
+                                    $status = $driver->status;
+                                    $badgeClass = match ($status) {
+                                        'ว่าง' => 'success',
+                                        'กำลังปฏิบัติงาน' => 'primary',
+                                        'ลาพัก' => 'warning',
+                                        'ไม่พร้อม' => 'danger',
+                                        default => 'secondary',
+                                    };
+                                    $statusEmoji = match ($status) {
+                                        'ว่าง' => '✅',
+                                        'กำลังปฏิบัติงาน' => '🚗',
+                                        'ลาพัก' => '🌴',
+                                        'ไม่พร้อม' => '❌',
+                                        default => '❓',
+                                    };
+                                @endphp
+
+                                <span class="badge bg-{{ $badgeClass }}">
+                                    {{ $statusEmoji }} {{ $status }}
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 @endsection
 
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.css" rel="stylesheet">
+    <style>
+        .list-group-item {
+            font-size: 0.9rem;
+        }
+
+        .driver-scroll {
+            max-height: 450px;
+            overflow-y: auto;
+        }
+    </style>
+@endpush
+
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
@@ -28,16 +83,15 @@
 
                 eventContent: function(arg) {
                     const event = arg.event.extendedProps;
-                    const bgColor = arg.event.backgroundColor || '#3788d8'; // fallback สี
-
+                    const bgColor = arg.event.backgroundColor || '#3788d8';
                     return {
                         html: `
                         <div style="
-                            font-size: 0.75rem; 
-                            line-height: 1.2; 
-                            background-color: ${bgColor}; 
-                            color: #fff; 
-                            padding: 2px 4px; 
+                            font-size: 0.75rem;
+                            line-height: 1.2;
+                            background-color: ${bgColor};
+                            color: #fff;
+                            padding: 2px 4px;
                             border-radius: 3px;
                         ">
                             <b>สถานที่: ${arg.event.title}</b><br>
@@ -50,14 +104,9 @@
                     };
                 },
 
-                eventDidMount: function(info) {
-                    console.log('Event:', info.event.title, 'BG Color:', info.el.style.backgroundColor);
-                },
-
                 eventClick: function(info) {
-                    
                     const props = info.event.extendedProps;
-                    
+
                     document.getElementById('modal-destination').textContent = info.event.title;
                     document.getElementById('modal-requester').textContent = props.requester;
                     document.getElementById('modal-department').textContent = props.department;
@@ -65,23 +114,18 @@
                         `${props.start_time} - ${props.end_time}`;
                     document.getElementById('modal-plate').textContent = props.car_registration;
                     document.getElementById('modal-driver').textContent = props.driver ?? '-';
-                    
                     document.getElementById('modal-purpose').textContent = props.purpose ?? '-';
                     document.getElementById('modal-meeting_datetime').textContent = props
                         .meeting_datetime ?? '-';
                     document.getElementById('modal-province').textContent = props.province ?? '-';
                     document.getElementById('modal-car_name').textContent = props.car_name ?? '-';
-                    document.getElementById('modal-driver_phone').textContent = props.driver_phone ?? '-';
-                    
+                    document.getElementById('modal-driver_phone').textContent = props.driver_phone ??
+                        '-';
                     document.getElementById('modal-car_request_time').textContent = props
                         .request_time ?? '-';
 
-
-                    const modal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
-                    modal.show();
-                    
+                    new bootstrap.Modal(document.getElementById('eventDetailModal')).show();
                 },
-
 
                 dateClick: function(info) {
                     fetch('/car-requests/set-date', {
@@ -97,7 +141,6 @@
                         window.location.href = '/car-requests/create';
                     });
                 }
-
             });
 
             calendar.render();
@@ -125,7 +168,6 @@
                     <p><strong>คนขับ:</strong> <span id="modal-driver"></span></p>
                     <p><strong>เบอร์คนขับ:</strong> <span id="modal-driver_phone"></span></p>
                     <p><strong>เวลาที่ขอรถ:</strong> <span id="modal-car_request_time"></span></p>
-                    <!--<p><strong>สถานะ:</strong> <span id="modal-status"></span></p>-->
                 </div>
             </div>
         </div>

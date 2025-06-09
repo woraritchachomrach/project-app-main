@@ -20,7 +20,7 @@
                 <div class="alert alert-warning text-center">ยังไม่มีคำขอที่รออนุมัติ</div>
             @else
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle mb-0 text-center w-100" style="min-width: 1300px;">
+                    <table class="table table-bordered table-hover align-middle mb-0 text-center w-100" style="min-width: 1400px;">
                         <thead class="table-light">
                             <tr>
                                 <th>รูป</th>
@@ -30,7 +30,6 @@
                                 <th>ทะเบียน</th>
                                 <th>รถ</th>
                                 <th>ผู้ขอ</th>
-                                <th>ไฟล์แนบ</th>
                                 <th>เบอร์ผู้ขอ</th>
                                 <th>ตำแหน่ง</th>
                                 <th>กลุ่ม</th>
@@ -39,7 +38,8 @@
                                 <th>เพื่อ</th>
                                 <th>ประชุม</th>
                                 <th>เวลาไป/กลับ</th>
-                                
+                                <th>ไฟล์แนบ</th>
+                                <th>จัดการ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -82,23 +82,37 @@
                                             {{ \Carbon\Carbon::parse($req->end_time)->format('d/m/Y H:i') }}
                                         </span>
                                     </td>
+                                    <td style="max-width: 160px;">
+                                        @if($req->attachment_path)
+                                            <a href="{{ asset('storage/' . $req->attachment_path) }}"
+                                               target="_blank"
+                                               class="btn btn-sm btn-outline-primary w-100"
+                                               data-bs-toggle="tooltip" title="เปิดไฟล์แนบ">
+                                                เปิดดู
+                                            </a>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
                                     <td>
-                                        <form action="{{ route('chief.car-requests.approve', $req->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-outline-success btn-sm rounded-circle p-2"
-                                                data-bs-toggle="tooltip" title="อนุมัติ"
-                                                onclick="return confirm('คุณแน่ใจหรือไม่ว่าจะอนุมัติคำขอนี้?')">
-                                                ✅
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('chief.car-requests.reject', $req->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle p-2"
-                                                data-bs-toggle="tooltip" title="ไม่อนุมัติ"
-                                                onclick="return confirm('คุณแน่ใจหรือไม่ว่าจะไม่อนุมัติคำขอนี้?')">
-                                                ❌
-                                            </button>
-                                        </form>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <form action="{{ route('chief.car-requests.approve', $req->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-success btn-sm rounded-circle p-2"
+                                                    data-bs-toggle="tooltip" title="อนุมัติ"
+                                                    onclick="return confirm('คุณแน่ใจหรือไม่ว่าจะอนุมัติคำขอนี้?')">
+                                                    ✅
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('chief.car-requests.reject', $req->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle p-2"
+                                                    data-bs-toggle="tooltip" title="ไม่อนุมัติ"
+                                                    onclick="return confirm('คุณแน่ใจหรือไม่ว่าจะไม่อนุมัติคำขอนี้?')">
+                                                    ❌
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -135,6 +149,10 @@
     .container-fluid {
         padding-right: 0;
         padding-left: 0;
+    }
+
+    td {
+        white-space: normal !important;
     }
 </style>
 

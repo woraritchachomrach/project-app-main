@@ -20,7 +20,7 @@ class CarRequest extends Model
         'end_time',
         'destination',
         'province',
-        'requester_phone', 
+        'requester_phone',
         'seats',
         'car_registration',
         'driver',
@@ -32,16 +32,23 @@ class CarRequest extends Model
         'meeting_datetime',
         'car_request_time',
         'acknowledged_at',
+        'attachment_path',
     ];
 
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);   // ✅ ความสัมพันธ์กับผู้ใช้งาน
     }
 
     public function driver()
     {
-        return $this->belongsTo(User::class, 'driver');
+        return $this->belongsTo(User::class, 'driver');  // ✅ ความสัมพันธ์กับคนขับรถ
+    }
+
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class);  // ✅ เพิ่มความสัมพันธ์กับรถ
+
     }
 }

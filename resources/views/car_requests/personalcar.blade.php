@@ -8,7 +8,7 @@
                     <i class="fas fa-car me-2"></i>ฟอร์มขอใช้รถส่วนตัว
                 </h2>
             </div>
-            
+
             <div class="card-body p-4 p-md-5">
                 {{-- แสดงข้อความสำเร็จ --}}
                 @if (session('success'))
@@ -32,7 +32,8 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('personal-car-requests.store') }}" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <form method="POST" action="{{ route('personal-car-requests.store') }}" enctype="multipart/form-data"
+                    class="needs-validation" novalidate>
                     @csrf
 
                     <div class="row g-4 mb-4">
@@ -44,11 +45,11 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">ชื่อ-สกุล <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold">ชื่อ-สกุล</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fas fa-user text-primary"></i></span>
-                                <input type="text" name="name" class="form-control" required value="{{ old('name') }}">
-                                <div class="invalid-feedback">กรุณากรอกชื่อ-สกุล</div>
+                                <input type="text" name="name" class="form-control" value="{{ Auth::user()->name }}"
+                                    readonly>
                             </div>
                         </div>
 
@@ -56,26 +57,27 @@
                             <label class="form-label fw-bold">เบอร์โทร <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fas fa-phone text-primary"></i></span>
-                                <input type="text" name="phone" class="form-control" required value="{{ old('phone') }}">
+                                <input type="text" name="phone" class="form-control" required
+                                    value="{{ old('phone') }}">
                                 <div class="invalid-feedback">กรุณากรอกเบอร์โทร</div>
                             </div>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">ตำแหน่ง <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold">ตำแหน่ง</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fas fa-briefcase text-primary"></i></span>
-                                <input type="text" name="position" class="form-control" required value="{{ old('position') }}">
-                                <div class="invalid-feedback">กรุณากรอกตำแหน่ง</div>
+                                <input type="text" name="position" class="form-control"
+                                    value="{{ Auth::user()->position }}" readonly>
                             </div>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">แผนก / กลุ่ม <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold">แผนก / กลุ่ม</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fas fa-building text-primary"></i></span>
-                                <input type="text" name="department" class="form-control" required value="{{ old('department') }}">
-                                <div class="invalid-feedback">กรุณากรอกแผนก/กลุ่ม</div>
+                                <input type="text" name="department" class="form-control"
+                                    value="{{ Auth::user()->department }}" readonly>
                             </div>
                         </div>
 
@@ -90,7 +92,8 @@
                             <label class="form-label fw-bold">ยี่ห้อรถ <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fas fa-car-side text-primary"></i></span>
-                                <input type="text" name="car_brand" class="form-control" required value="{{ old('car_brand') }}">
+                                <input type="text" name="car_brand" class="form-control" required
+                                    value="{{ old('car_brand') }}">
                                 <div class="invalid-feedback">กรุณากรอกยี่ห้อรถ</div>
                             </div>
                         </div>
@@ -99,7 +102,8 @@
                             <label class="form-label fw-bold">ทะเบียนรถ <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fas fa-id-card text-primary"></i></span>
-                                <input type="text" name="car_registration" class="form-control" required value="{{ old('car_registration') }}">
+                                <input type="text" name="car_registration" class="form-control" required
+                                    value="{{ old('car_registration') }}">
                                 <div class="invalid-feedback">กรุณากรอกทะเบียนรถ</div>
                             </div>
                         </div>
@@ -108,7 +112,8 @@
                             <label class="form-label fw-bold">จำนวนที่นั่ง <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="fas fa-users text-primary"></i></span>
-                                <input type="number" name="seats" class="form-control" required value="{{ old('seats') }}" min="1">
+                                <input type="number" name="seats" class="form-control" required
+                                    value="{{ old('seats') }}" min="1">
                                 <div class="invalid-feedback">กรุณากรอกจำนวนที่นั่ง</div>
                             </div>
                         </div>
@@ -123,8 +128,10 @@
                         <div class="col-md-9">
                             <label class="form-label fw-bold">สถานที่ไป <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="fas fa-map-marker-alt text-primary"></i></span>
-                                <input type="text" name="destination" class="form-control" required value="{{ old('destination') }}">
+                                <span class="input-group-text bg-light"><i
+                                        class="fas fa-map-marker-alt text-primary"></i></span>
+                                <input type="text" name="destination" class="form-control" required
+                                    value="{{ old('destination') }}">
                                 <div class="invalid-feedback">กรุณากรอกสถานที่ไป</div>
                             </div>
                         </div>
@@ -132,8 +139,10 @@
                         <div class="col-md-6">
                             <label class="form-label fw-bold">จังหวัด <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="fas fa-map-marked-alt text-primary"></i></span>
-                                <input type="text" name="province" class="form-control" required value="{{ old('province') }}">
+                                <span class="input-group-text bg-light"><i
+                                        class="fas fa-map-marked-alt text-primary"></i></span>
+                                <input type="text" name="province" class="form-control" required
+                                    value="{{ old('province') }}">
                                 <div class="invalid-feedback">กรุณากรอกจังหวัด</div>
                             </div>
                         </div>
@@ -141,8 +150,10 @@
                         <div class="col-md-6">
                             <label class="form-label fw-bold">วัตถุประสงค์ <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="fas fa-bullseye text-primary"></i></span>
-                                <input type="text" name="purpose" class="form-control" required value="{{ old('purpose') }}">
+                                <span class="input-group-text bg-light"><i
+                                        class="fas fa-bullseye text-primary"></i></span>
+                                <input type="text" name="purpose" class="form-control" required
+                                    value="{{ old('purpose') }}">
                                 <div class="invalid-feedback">กรุณากรอกวัตถุประสงค์</div>
                             </div>
                         </div>
@@ -168,7 +179,8 @@
                         <div class="col-12">
                             <label class="form-label fw-bold">เหตุผลเพิ่มเติม (ถ้ามี)</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="fas fa-comment-dots text-primary"></i></span>
+                                <span class="input-group-text bg-light"><i
+                                        class="fas fa-comment-dots text-primary"></i></span>
                                 <textarea name="reason" class="form-control" rows="3">{{ old('reason') }}</textarea>
                             </div>
                         </div>
@@ -176,7 +188,8 @@
                         <div class="col-12">
                             <label class="form-label fw-bold">แนบไฟล์ (ถ้ามี)</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="fas fa-paperclip text-primary"></i></span>
+                                <span class="input-group-text bg-light"><i
+                                        class="fas fa-paperclip text-primary"></i></span>
                                 <input type="file" name="attachment" class="form-control">
                             </div>
                             <small class="text-muted">สามารถอัพโหลดไฟล์ PDF, JPG, PNG ขนาดไม่เกิน 5MB</small>
@@ -200,37 +213,46 @@
             border: none;
             transition: transform 0.3s ease;
         }
+
         .card:hover {
             transform: translateY(-5px);
         }
+
         .card-header {
             border-radius: 0.3rem 0.3rem 0 0 !important;
         }
+
         .form-label {
             margin-bottom: 0.5rem;
         }
+
         .input-group-text {
             min-width: 45px;
             justify-content: center;
         }
+
         .btn-primary {
             background-color: #3b7ddd;
             border-color: #3b7ddd;
             box-shadow: 0 4px 6px rgba(59, 125, 221, 0.3);
         }
+
         .btn-primary:hover {
             background-color: #2f6bc5;
             border-color: #2f6bc5;
             transform: translateY(-2px);
         }
+
         .invalid-feedback {
             display: none;
             color: #dc3545;
         }
-        .was-validated .form-control:invalid ~ .invalid-feedback,
-        .form-control.is-invalid ~ .invalid-feedback {
+
+        .was-validated .form-control:invalid~.invalid-feedback,
+        .form-control.is-invalid~.invalid-feedback {
             display: block;
         }
+
         .was-validated .form-control:invalid,
         .form-control.is-invalid {
             border-color: #dc3545;
@@ -245,21 +267,21 @@
 
     <script>
         // ฟังก์ชันสำหรับตรวจสอบฟอร์มก่อน submit
-        (function () {
+        (function() {
             'use strict'
-            
+
             // Fetch all the forms we want to apply custom Bootstrap validation styles to
             var forms = document.querySelectorAll('.needs-validation')
-            
+
             // Loop over them and prevent submission
             Array.prototype.slice.call(forms)
-                .forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
+                .forEach(function(form) {
+                    form.addEventListener('submit', function(event) {
                         if (!form.checkValidity()) {
                             event.preventDefault()
                             event.stopPropagation()
                         }
-                        
+
                         form.classList.add('was-validated')
                     }, false)
                 })

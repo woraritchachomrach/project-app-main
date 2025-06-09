@@ -13,6 +13,8 @@ use App\Notifications\TelegramCarRequestNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\DriverAcknowledgedNotification;
+use App\Models\Driver;
+use App\Models\Car;
 
 use Mpdf\Mpdf;
 use NotificationChannels\Telegram\Telegram;
@@ -38,17 +40,29 @@ class CarRequestController extends Controller
     //}
 
 
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        $query = CarRequest::query();
 
         if ($user->role === 'driver') {
-            // ✅ ให้แสดงเฉพาะรายการที่มอบหมายให้เขา
-            $requests = CarRequest::where('driver', $user->name)->latest()->get();
-        } else {
-            // ผู้ใช้ทั่วไปเห็นรายการของตัวเอง
-            $requests = CarRequest::where('user_id', $user->id)->latest()->get();
+            $query->where('driver', $user->name);
+        } elseif (!in_array($user->role, ['chief', 'director'])) {
+            $query->where('user_id', $user->id);
         }
+
+        // ✅ เพิ่มการกรองตามเดือน
+        if ($request->filled('month')) {
+            try {
+                $month = \Carbon\Carbon::createFromFormat('Y-m', $request->month);
+                $query->whereMonth('start_time', $month->month)
+                    ->whereYear('start_time', $month->year);
+            } catch (\Exception $e) {
+                // ไม่ทำอะไร ถ้าเดือนผิด
+            }
+        }
+
+        $requests = $query->latest()->get();
 
         return view('car_requests.list', compact('requests'));
     }
@@ -89,8 +103,18 @@ class CarRequestController extends Controller
             'meeting_datetime' => 'nullable|date',
             'car_request_time' => 'nullable|string',
             'province' => 'nullable|string',
+            'attachment' => 'nullable|file|max:10240',
         ]);
+
         $validated['user_id'] = Auth::id();
+
+        // ✅ บันทึก path ไฟล์แนบไว้ใน validated ก่อน
+        if ($request->hasFile('attachment')) {
+            $filename = time() . '_' . $request->file('attachment')->getClientOriginalName();
+            $filePath = $request->file('attachment')->storeAs('attachments', $filename, 'public');
+            $validated['attachment_path'] = $filePath;
+        }
+
 
         // สร้างคำขอใหม่และเก็บผลลัพธ์ในตัวแปร $carRequest
         $carRequest = CarRequest::create($validated);
@@ -138,6 +162,11 @@ class CarRequestController extends Controller
     }
 
 
+    // public function calendar()
+    // {
+    //    $drivers = Driver::all();
+    //     return view('car_requests.calendar', compact('drivers'));
+    // }
 
     // แสดงข้อมูลทั้งหมดในปฏิทิน
     public function calendarEvents()
@@ -172,6 +201,14 @@ class CarRequestController extends Controller
 
         return response()->json($events);
     }
+
+    public function calendar()
+    {
+        $drivers = Driver::all(); // ดึงข้อมูลคนขับทั้งหมด
+        return view('car_requests.calendar', compact('drivers'));
+    }
+
+
 
 
     public function printFome($id)

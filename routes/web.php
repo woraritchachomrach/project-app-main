@@ -17,6 +17,7 @@ use App\Http\Controllers\DriverDashboardController;
 use App\Http\Controllers\DirectorController;
 use App\Http\Controllers\PersonalCarRequestController;
 use App\Http\Controllers\PersonalCarApprovalController;
+use App\Http\Controllers\ChiefDriverController;
 use App\Http\Controllers\AdminDashboardController;
 
 Route::post('/car-requests/set-date', function (Request $request) {
@@ -54,12 +55,12 @@ Route::get('/', function () {
 
 //Route Admin เฉพาระหน้า admin
 //Route::middleware(['auth', 'role.admin'])->prefix('admin')->group(function () {
- //   Route::get('/', [AdminDashboardController::class, 'adminDashboard'])->name('admin.dashboard');
+//   Route::get('/', [AdminDashboardController::class, 'adminDashboard'])->name('admin.dashboard');
 //});
 
 
 //Route Chief เฉพราะหน้า Chief
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard'); //ให้chiefไปหน้าdashboardก่อน
+Route::get('/dashboard', [CarRequestController::class, 'calendar'])->middleware('auth')->name('dashboard'); //ให้chiefไปหน้าdashboardก่อน
 Route::middleware(['auth', 'role.chief'])->prefix('chief')->group(function () {
     Route::get('/dashboard', [ChiefDashboardController::class, 'chiefDashboard'])->name('chief.dashboard');
 
@@ -73,6 +74,14 @@ Route::middleware(['auth', 'role.chief'])->prefix('chief')->group(function () {
     // การอนุมัติ / ไม่อนุมัติ
     Route::post('/car-requests/{id}/approve', [CarApprovalController::class, 'Chiefapprove'])->name('chief.car-requests.approve');
     Route::post('/car-requests/{id}/reject', [CarApprovalController::class, 'Chiefreject'])->name('chief.car-requests.reject');
+
+    //เพิ่มแก้ไขคนขับรถ
+    Route::get('/drivers', [ChiefDriverController::class, 'index'])->name('chief.drivers.index');
+    Route::get('/drivers/create', [ChiefDriverController::class, 'create'])->name('chief.drivers.create');
+    Route::post('/drivers', [ChiefDriverController::class, 'store'])->name('chief.drivers.store');
+    Route::get('/drivers/{driver}/edit', [ChiefDriverController::class, 'edit'])->name('chief.drivers.edit');
+    Route::delete('/drivers/{id}', [ChiefDriverController::class, 'destroy'])->name('chief.drivers.destroy');
+    Route::put('/drivers/{driver}', [ChiefDriverController::class, 'update'])->name('chief.drivers.update');
 });
 
 //Route User admin chief หน้าฟอร์มปกติ
@@ -91,19 +100,19 @@ Route::middleware(['auth', \App\Http\Middleware\RoleDriverMiddleware::class])->p
 
     Route::get('/assigned-jobs', [DriverDashboardController::class, 'assignedJobs'])->name('driver.assigned_jobs');
 
-     // ✅ เพิ่ม route สำหรับกดรับทราบ/ไม่รับทราบ
+    // ✅ เพิ่ม route สำหรับกดรับทราบ/ไม่รับทราบ
     Route::post('/acknowledge/{id}', [CarRequestController::class, 'acknowledge'])->name('driver.acknowledge');
 });
 
 Route::middleware(['auth', \App\Http\Middleware\RoleDirectorMiddleware::class])->prefix('director')->group(function () {
     Route::get('/dashboard', [DirectorController::class, 'dashboard'])->name('director.dashboard');
-    Route::get('/requests', [DirectorController::class, 'directorlist'])->name('director.director_list');    
+    Route::get('/requests', [DirectorController::class, 'directorlist'])->name('director.director_list');
 });
 
 //Route::middleware(['auth', \App\Http\Middleware\RoleDriverMiddleware::class])->prefix('driver')->group(function () {
- //   Route::get('/dashboard', [DriverDashboardController::class, 'driverDashboard'])->name('driver.dashboard');
+//   Route::get('/dashboard', [DriverDashboardController::class, 'driverDashboard'])->name('driver.dashboard');
 
-   // Route::get('/assigned-jobs', [DriverDashboardController::class, 'assignedJobs'])->name('driver.assigned_jobs');
+// Route::get('/assigned-jobs', [DriverDashboardController::class, 'assignedJobs'])->name('driver.assigned_jobs');
 //});
 
 
@@ -123,7 +132,7 @@ Route::post('/car-requests/set-date', function (Request $request) {
 Route::get('/car-request/{id}/print', [CarRequestController::class, 'printForm'])->name('car_request.print');
 Route::get('/font-test', function () {
     return view('car_requests.print', ['request' => \App\Models\CarRequest::first()]);
-});  
+});
 
 //Route::get('/admin-dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
 Route::get('/calendar', [CarRequestController::class, 'calendar'])->middleware('auth')->name('car-requests.calendar');
@@ -132,7 +141,7 @@ Route::resource('car-requests', CarRequestController::class);
 Route::resource('user-profiles', UserProfileController::class);
 
 Route::resource('personal-car-requests', PersonalCarRequestController::class); //Route ของรถส่วนตัว   
-Route::get('/chief/acknowledgements', [CarApprovalController::class, 'acknowledgementHistory'])->name('chief.acknowledgement_history');// Route สำหรับรับทราบกับไม่รับทราบ
+Route::get('/chief/acknowledgements', [CarApprovalController::class, 'acknowledgementHistory'])->name('chief.acknowledgement_history'); // Route สำหรับรับทราบกับไม่รับทราบ
 
 //สำหรับchiefอนุมัติคำร้อง รถส่วนตัว
 Route::middleware(['auth', 'role.chief'])->prefix('chief/personal-requests')->group(function () {
@@ -144,9 +153,10 @@ Route::middleware(['auth', 'role.chief'])->prefix('chief/personal-requests')->gr
     Route::post('/{id}/reject', [PersonalCarApprovalController::class, 'reject'])->name('chief.personal-requests.reject');
 });
 
-Route::get('/dashboard', function () {
-    return view('car_requests.calendar');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+//Route::get('/dashboard', function () {
+//    return view('car_requests.calendar');
+//})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
